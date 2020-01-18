@@ -1,0 +1,72 @@
+[{
+    "action": "starRating",
+    "percentage": 18
+}, {
+    "action": "starRating",
+    "percentage": 20
+}, {
+    "action": "starRating",
+    "percentage": 24
+}, {
+    "action": "starRating",
+    "percentage": 28
+}, {
+    "action": "starRating",
+    "percentage": 32
+}, {
+    "action": "multiCheckRating",
+    "percentage": 35,
+    "option": 0
+}, {
+    "action": "starRating",
+    "percentage": 60
+}, {
+    "action": "starRating",
+    "percentage": 62
+}, {
+    "action": "multiCheckRating",
+    "percentage": 64,
+    "option": 0
+}, {
+    "action": "multiCheckRating",
+    "percentage": 66,
+    "option": 6
+}, {
+    "action": "multiCheckRating",
+    "percentage": 69,
+    "option": 5
+}, {
+    "action": "textRating",
+    "percentage": 73
+}, {
+    "action": "multiCheckRating",
+    "percentage": 77,
+    "option": 2
+}, {
+    "action": "multiCheckRating",
+    "percentage": 79,
+    "option": 2
+}, {
+    "action": "selectRating",
+    "percentage": 81,
+    "option": 1
+}, {
+    "action": "selectRating",
+    "percentage": 83,
+    "option": 1
+}, {
+    "action": "multiCheckRating",
+    "percentage": 84,
+    "option": 0
+}, {
+    "action": "multiCheckRating",
+    "percentage": 86,
+    "option": 1
+}, {
+    "action": "multiCheckRating",
+    "percentage": 98,
+    "option": 0
+}, {
+    "action": "submitRating",
+    "percentage": 100
+}]
