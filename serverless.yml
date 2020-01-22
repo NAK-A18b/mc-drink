@@ -4,9 +4,20 @@ app: mc-drink
 provider:
   name: aws
   runtime: nodejs12.x
-  environment:
-    CHROME_PATH: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  region: eu-central-1
+  timeout: 60
 
 functions:
-  app:
-    handler: handler.handler
+  telegramBot:
+    handler: handler.telegramBot
+    events:
+      - http:
+          path: telegram
+          method: ANY
+          cors: true
+    environment:
+      BOT_TOKEN: ${file(./secrets/secrets.yml):BOT_TOKEN}
+      CHROME_PATH: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+      CAPTCHA_KEY: ${file(./secrets/secrets.yml):CAPTCHA_KEY}
+  telegramApi:
+    handler: handler.telgramApi

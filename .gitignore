@@ -269,3 +269,8 @@ modules.xml
 .history
 
 # End of https://www.gitignore.io/api/node,intellij,phpstorm,serverless,visualstudiocode
+
+# Custom
+secrets.yml
+.DS_Store
+test.js

@@ -1,54 +1,71 @@
 "use strict";
-const chromium = require("chrome-aws-lambda");
+const fs = require("fs");
 
-const ratings = require('./src/ratings');
-const pageControlls = require('./src/page');
-const time = require('./src/utils/time')
-const pages = require('./pages.json');
+const lambda = require("./src/lambda");
+const telegram = require("./src/telegram");
+const mcDonalds = require("./src/mcDonalds");
 
-const CODE = "bvlt-dg1p-92gf";
-const chromepath = process.env.IS_LOCAL && process.env.CHROME_PATH;
+const response = body => ({
+  statusCode: 200,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(body),
+});
 
-const login = async (page) => {
-  await page.waitForSelector("#receiptCode");
+const Commands = [
+  {
+    cmd: "/start",
+    text: "",
+  },
+  {
+    cmd: "/help",
+    text: "",
+  },
+];
 
-  const input = await page.$("#receiptCode");
-  await input.focus();
-  await page.keyboard.type(CODE, {
-    delay: 50
-  });
-  await time.delay(500);
-  const button = await page.$("button");
-  button.click();
-};
+module.exports.telegramBot = async ({ body }) => {
+  const { message } = process.env.IS_LOCAL ? body : JSON.parse(body);
+  const { chat } = message;
 
-module.exports.handler = async (event, context, callback) => {
-  const browser = await chromium.puppeteer.launch({
-    executablePath: chromepath || await chromium.executablePath,
-    headless: false
-  });
+  telegram.start();
 
-  try {
-    const page = (await browser.pages())[0];
-    await page.goto("https://mcdonalds.fast-insight.com/voc/de/de");
-    await login(page);
-    ratings.setup(page);
-
-    for (let index = 0; index < pages.length; index++) {
-      const {
-        percentage,
-        action,
-        ...rest
-      } = pages[index];
-
-      await pageControlls.load(page, percentage);
-      await ratings[action](rest);
-      await time.delay(1000);
-      await pageControlls.next(page);
-    }
-  } catch (e) {
-    console.error("Error: ", e);
+  if (!message.startsWith("/")) {
+    lambda.startTelegramApi(chat.id, message.text);
+    return response("Success");
   }
 
-  callback(null, "nice");
+  const message = Commands.find(({ cmd }) => cmd === message);
+  if (message) await telegram.sendMessage(chat.id, message.text);
+
+  return response("Success");
+};
+
+module.exports.telegramApi = async ({ body }) => {
+  telegram.start();
+  const { chatId, code } = JSON.parse(body);
+
+  const apiError = async msg => {
+    await telegram.sendMessage(chatId, messageId, msg);
+    return response(msg);
+  };
+
+  const messageId = await telegram.sendMessage(chatId, "Starting Survey...");
+  if (!mcDonalds.verifyCode(code)) return await apiError("Wrong Code");
+
+  const screenshot = await mcDonalds
+    .doSurvey(code, telegram.statusUpdate(chatId, messageId))
+    .catch(error => ({
+      error,
+    }));
+
+  if (screenshot.error) return await apiError(screenshot.error);
+
+  if (!fs.existsSync("/tmp")) fs.mkdir("/tmp");
+  fs.writeFileSync("/tmp/photo.png", screenshot);
+
+  await telegram.deleteMessage(chatId, messageId);
+  await telegram.sendPhoto(chatId, "/tmp/photo.png");
+
+  return response("Success");
 };
