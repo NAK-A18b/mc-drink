@@ -13,53 +13,31 @@ const response = body => ({
   body: JSON.stringify(body),
 });
 
-const Commands = [
-  {
-    cmd: "/start",
-    text: "🔗 Verbunden\n" +
-        "Bitte gib deinen 12-stelligen Rechnungs-Code ein.\n" +
-        "\n" +
-        "💡 Beispiel: \n" +
-        "- bzjqnlivf5dr \n" +
-        "- bzjq-nliv-fki3",
-  },
-  {
-    cmd: "/help",
-    text: "ℹ️Informationen: \n "+
-          "Gib deinen Rechnungs-Code ein und erhalte nach kurzer Zeit deinen gratis Getränk Coupon! \n" +
-          "Der Rechnungs-Code befindet sich im unteren Bereich deiner Rechnung und besteht aus 12 Zahlen und Zeichen."+
-          "Nachdem du deinen Gratiscoupon erhalten hast, bekommst du beim Vorzeigen an der Kasse ein gratis 0.25l Getränk deiner Wahl!" +
-          "\n" +
-          "📋 Weitere Informationen: \n" +
-          "- Dein Rechnungs-Code ist ab dem Kauf der Bestellung 2 Tage gültig.\n" +
-          "- Der Gratiscoupon ist ab Erstellung 1 Monat gültig. \n" +
-          "- Alle Codes sind nur ein Mal einlösbar",
-  },
-];
-
 module.exports.telegramBot = async ({ body }) => {
   const { message } = process.env.IS_LOCAL ? body : JSON.parse(body);
-  const { chat } = message;
+  const { chat, text } = message;
 
   telegram.start();
 
-  if (!message.startsWith("/")) {
-    lambda.startTelegramApi(chat.id, message.text);
+  if (!text.startsWith("/")) {
+    await lambda.startTelegramApi(chat.id, text);
     return response("Success");
   }
 
-  const message = Commands.find(({ cmd }) => cmd === message);
-  if (message) await telegram.sendMessage(chat.id, message.text);
+  const answer = telegram.Commands.find(
+    ({ cmd }) => cmd === text.toLocaleLowerCase()
+  );
+  if (answer) await telegram.sendMessage(chat.id, answer.text);
 
   return response("Success");
 };
 
 module.exports.telegramApi = async ({ body }) => {
   telegram.start();
-  const { chatId, code } = JSON.parse(body);
+  const { chatId, code } = body;
 
   const apiError = async msg => {
-    await telegram.sendMessage(chatId, messageId, msg);
+    await telegram.editMessage(chatId, messageId, msg);
     return response(msg);
   };
 

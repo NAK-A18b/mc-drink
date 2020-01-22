@@ -1,15 +1,20 @@
 const aws = require("aws-sdk");
+const dev = require("./utils/dev");
 
 const lambda = new aws.Lambda({
   region: "eu-central-1",
+  endpoint: dev.isLocal() ? "http://localhost:3002" : undefined,
 });
 
-module.exports.startTelegramApi = (chatId, code) => {
-  lambda.invoke({
+module.exports.startTelegramApi = (chatId, code) =>
+  lambda
+  .invoke({
     FunctionName: "McDrink-dev-telegramApi",
+    InvocationType: "RequestResponse",
     Payload: JSON.stringify({
-      chatId,
-      code,
+      body: {
+        chatId,
+        code,
+      },
     }),
-  });
-};
+  }).promise()

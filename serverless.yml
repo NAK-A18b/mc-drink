@@ -5,7 +5,11 @@ provider:
   name: aws
   runtime: nodejs12.x
   region: eu-central-1
-  timeout: 60
+  stage: dev
+
+plugins:
+  - serverless-offline
+  - serverless-iam-roles-per-function
 
 functions:
   telegramBot:
@@ -17,7 +21,15 @@ functions:
           cors: true
     environment:
       BOT_TOKEN: ${file(./secrets/secrets.yml):BOT_TOKEN}
-      CHROME_PATH: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-      CAPTCHA_KEY: ${file(./secrets/secrets.yml):CAPTCHA_KEY}
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - lambda:InvokeFunction
+        Resource: "*"
   telegramApi:
-    handler: handler.telgramApi
+    handler: handler.telegramApi
+    timeout: 60
+    environment:
+      BOT_TOKEN: ${file(./secrets/secrets.yml):BOT_TOKEN}
+      CHROME_PATH: ${file(./secrets/secrets.yml):CHROME_PATH}
+      CAPTCHA_KEY: ${file(./secrets/secrets.yml):CAPTCHA_KEY}
