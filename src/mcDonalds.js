@@ -15,7 +15,7 @@ const startBrowser = async () =>
   chromium.puppeteer.launch({
     args: chromium.args,
     executablePath: chromepath || (await chromium.executablePath),
-    headless: !process.env.IS_LOCAL,
+    headless: !dev.isLocal(),
   });
 
 module.exports.doSurvey = (code, statusCallback) => {
@@ -39,7 +39,11 @@ module.exports.doSurvey = (code, statusCallback) => {
 
     ratings.setup(page);
     for (let index = 0; index < pages.length; index++) {
-      const { percentage, action, ...rest } = pages[index];
+      const {
+        percentage,
+        action,
+        ...rest
+      } = pages[index];
 
       await statusCallback(percentage);
       await pageControlls.load(page, percentage);
