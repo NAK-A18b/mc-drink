@@ -4,6 +4,7 @@ const fs = require("fs");
 const lambda = require("./src/lambda");
 const telegram = require("./src/telegram");
 const mcDonalds = require("./src/mcDonalds");
+const bot = require("./src/bot");
 
 const response = body => ({
   statusCode: 200,
@@ -15,8 +16,12 @@ const response = body => ({
 
 module.exports.telegramBot = async ({ body }) => {
   const { message } = process.env.IS_LOCAL ? body : JSON.parse(body);
-  const { chat, text } = message;
+  if (!message) return response("Success");
 
+  const { chat, text } = message;
+  if (!text || !chat) return response("Success");
+
+  console.info(`Message from ${chat.id}: ${message}`);
   telegram.start();
 
   if (!text.startsWith("/")) {
@@ -24,7 +29,7 @@ module.exports.telegramBot = async ({ body }) => {
     return response("Success");
   }
 
-  const answer = telegram.Commands.find(
+  const answer = bot.Commands.find(
     ({ cmd }) => cmd === text.toLocaleLowerCase()
   );
   if (answer) await telegram.sendMessage(chat.id, answer.text);
@@ -42,6 +47,7 @@ module.exports.telegramApi = async ({ body }) => {
   };
 
   const messageId = await telegram.sendMessage(chatId, "Starting Survey...");
+
   if (!mcDonalds.verifyCode(code)) return await apiError("Wrong Code");
 
   const screenshot = await mcDonalds

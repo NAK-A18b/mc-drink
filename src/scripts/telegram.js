@@ -1,6 +1,9 @@
 const fetch = require("node-fetch");
+const YAML = require("yaml");
+const fs = require("fs");
+const path = require("path");
 
-const requestUrl = (method, token = botToken) =>
+const requestUrl = (method, token) =>
   `https://api.telegram.org/bot${token}/${method}`;
 
 const setHook = webhookUrl =>

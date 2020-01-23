@@ -6,7 +6,9 @@
   "scripts": {
     "setup": "node src/scripts/telegram.js",
     "telegram": "serverless invoke local -f telegramBot -p ./resources/dev/event.json",
-    "start": "IS_OFFLINE=true sls offline"
+    "start": "IS_OFFLINE=true sls offline",
+    "test": "echo Running Tests",
+    "secrets": "gpg --symmetric --cipher-algo AES256 ./secrets/secrets.yml"
   },
   "repository": {
     "type": "git",
@@ -29,6 +31,7 @@
   },
   "devDependencies": {
     "serverless-iam-roles-per-function": "^2.0.2",
-    "serverless-offline": "^6.0.0-alpha.62"
+    "serverless-offline": "^6.0.0-alpha.62",
+    "yaml": "^1.7.2"
   }
 }
