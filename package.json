@@ -6,7 +6,7 @@
   "scripts": {
     "setup": "node src/scripts/telegram.js",
     "telegram": "serverless invoke local -f telegramBot -p ./resources/dev/event.json",
-    "start": "IS_OFFLINE=true sls offline",
+    "start": "cross-env IS_OFFLINE=true sls offline",
     "test": "echo Running Tests",
     "secrets": "gpg --symmetric --cipher-algo AES256 ./secrets/secrets.yml"
   },
@@ -24,12 +24,13 @@
   "dependencies": {
     "aws-sdk": "^2.608.0",
     "chrome-aws-lambda": "^2.0.2",
-    "form-data": "^3.0.0",
     "node-fetch": "^2.6.0",
     "puppeteer-core": "^2.0.0",
+    "serverless": "^1.61.3",
     "telegram-bot-api": "^1.3.3"
   },
   "devDependencies": {
+    "cross-env": "^6.0.3",
     "serverless-iam-roles-per-function": "^2.0.2",
     "serverless-offline": "^6.0.0-alpha.62",
     "yaml": "^1.7.2"
