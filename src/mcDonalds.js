@@ -12,11 +12,11 @@ const chromepath = dev.isLocal() && process.env.CHROME_PATH;
 module.exports.verifyCode = code => code.match(/^(\S{4})-?(\S{4})-?(\S{4})$/);
 
 const startBrowser = async () =>
-  chromium.puppeteer.launch({
-    args: chromium.args,
-    executablePath: chromepath || (await chromium.executablePath),
-    headless: !dev.isLocal(),
-  });
+    chromium.puppeteer.launch({
+      args: dev.isLocal() ? [] : chromium.args,
+      executablePath: chromepath || (await chromium.executablePath),
+      headless: !dev.isLocal(),
+    });
 
 module.exports.doSurvey = (code, statusCallback) => {
   return new Promise(async (resolve, reject) => {
@@ -27,15 +27,18 @@ module.exports.doSurvey = (code, statusCallback) => {
     await pageControlls.login(page, code);
     await time.delay(500);
 
-    const error = await page.$eval(
-      "#errorMessage strong",
-      element => element.innerHTML
-    );
+    const hasError = await page.$("#errorMessage");
+    if (hasError) {
+      const error = await page.$eval(
+          "#errorMessage strong",
+          element => element.innerHTML
+      );
 
-    if (error) {
       await browser.close();
       return reject(error);
     }
+
+
 
     ratings.setup(page);
     for (let index = 0; index < pages.length; index++) {
