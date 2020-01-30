@@ -25,6 +25,7 @@ functions:
       - Effect: "Allow"
         Action:
           - lambda:InvokeFunction
+          - lambda:InvokeAsync
         Resource: "*"
   telegramApi:
     handler: handler.telegramApi
