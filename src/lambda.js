@@ -16,4 +16,4 @@ module.exports.startTelegramApi = (chatId, code) =>
         code,
       },
     }),
-  });
+  }).promise();

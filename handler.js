@@ -25,7 +25,7 @@ module.exports.telegramBot = async ({ body }) => {
   telegram.start();
 
   if (!text.startsWith("/")) {
-    lambda.startTelegramApi(chat.id, text).send();
+    await lambda.startTelegramApi(chat.id, text);
     return response("Success");
   }
 
