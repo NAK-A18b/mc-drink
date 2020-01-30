@@ -1,10 +1,10 @@
-name: Deploy master
+name: Deploy t/Lambda_Invocation
 
 on:
   push:
     branches:
       - master
-
+      - t/Lambda_Invocation
 jobs:
   deploy:
     name: deploy
