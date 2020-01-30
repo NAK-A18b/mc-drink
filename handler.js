@@ -25,7 +25,7 @@ module.exports.telegramBot = async ({ body }) => {
   telegram.start();
 
   if (!text.startsWith("/")) {
-    await lambda.startTelegramApi(chat.id, text);
+    lambda.startTelegramApi(chat.id, text).send();
     return response("Success");
   }
 
@@ -39,7 +39,7 @@ module.exports.telegramBot = async ({ body }) => {
 
 module.exports.telegramApi = async ({ body }) => {
   telegram.start();
-  const { chatId, code } = body;
+  const { chatId, code } = process.env.IS_LOCAL ? body : JSON.parse(body);
 
   const apiError = async msg => {
     await telegram.editMessage(chatId, messageId, msg);
@@ -50,19 +50,24 @@ module.exports.telegramApi = async ({ body }) => {
 
   if (!mcDonalds.verifyCode(code)) return await apiError("Wrong Code");
 
-  const screenshot = await mcDonalds
+  const file = await mcDonalds
     .doSurvey(code, telegram.statusUpdate(chatId, messageId))
     .catch(error => ({
       error,
     }));
 
-  if (screenshot.error) return await apiError(screenshot.error);
+  if (file.error) return await apiError(file.error);
 
   if (!fs.existsSync("/tmp")) fs.mkdir("/tmp");
-  fs.writeFileSync("/tmp/photo.png", screenshot);
+  fs.writeFileSync("/tmp/coupon.pdf", file);
 
   await telegram.deleteMessage(chatId, messageId);
-  await telegram.sendPhoto(chatId, "/tmp/photo.png");
+  await telegram.sendDocument(chatId, "/tmp/coupon.pdf");
 
+  return response("Success");
+};
+
+module.exports.test = () => {
+  console.log("test lamba");
   return response("Success");
 };

@@ -35,10 +35,10 @@ module.exports.deleteMessage = (chatId, messageId) =>
     message_id: messageId,
   });
 
-module.exports.sendPhoto = (chatId, photoPath) =>
-  api.sendPhoto({
+module.exports.sendDocument = (chatId, file) =>
+  api.sendDocument({
     chat_id: chatId,
-    photo: photoPath,
+    document: file,
   });
 
 module.exports.editMessage = (chatId, messageId, message) =>

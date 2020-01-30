@@ -7,14 +7,13 @@ const lambda = new aws.Lambda({
 });
 
 module.exports.startTelegramApi = (chatId, code) =>
-  lambda
-  .invoke({
+  lambda.invoke({
     FunctionName: "McDrink-dev-telegramApi",
-    InvocationType: "RequestResponse",
+    InvocationType: "Event",
     Payload: JSON.stringify({
       body: {
         chatId,
         code,
       },
     }),
-  }).promise()
+  });

@@ -12,11 +12,11 @@ const chromepath = dev.isLocal() && process.env.CHROME_PATH;
 module.exports.verifyCode = code => code.match(/^(\S{4})-?(\S{4})-?(\S{4})$/);
 
 const startBrowser = async () =>
-    chromium.puppeteer.launch({
-      args: dev.isLocal() ? [] : chromium.args,
-      executablePath: chromepath || (await chromium.executablePath),
-      headless: !dev.isLocal(),
-    });
+  chromium.puppeteer.launch({
+    args: dev.isLocal() ? [] : chromium.args,
+    executablePath: chromepath || (await chromium.executablePath),
+    headless: !dev.isLocal(),
+  });
 
 module.exports.doSurvey = (code, statusCallback) => {
   return new Promise(async (resolve, reject) => {
@@ -30,15 +30,13 @@ module.exports.doSurvey = (code, statusCallback) => {
     const hasError = await page.$("#errorMessage");
     if (hasError) {
       const error = await page.$eval(
-          "#errorMessage strong",
-          element => element.innerHTML
+        "#errorMessage strong",
+        element => element.innerHTML
       );
 
       await browser.close();
       return reject(error);
     }
-
-
 
     ratings.setup(page);
     for (let index = 0; index < pages.length; index++) {
@@ -55,8 +53,17 @@ module.exports.doSurvey = (code, statusCallback) => {
       await pageControlls.next(page);
     }
 
-    const screen = await page.screenshot();
-    // await browser.close();
-    resolve(screen);
+    await page.content();
+    await page.waitForSelector("#lblCode1");
+    const spanElement = await page.$("#lblCode1");
+    const textHandle = await spanElement.getProperty("innerText");
+    const text = await textHandle.jsonValue();
+
+    const file = await fetch(
+      `https://survey.fast-insight.com/mcd/germany/coupon_pdf.php?code=${text}`
+    ).then(res => res.buffer());
+
+    await browser.close();
+    resolve(file);
   });
 };

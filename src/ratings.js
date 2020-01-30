@@ -1,4 +1,5 @@
 const message = require("./message");
+const captcha = require("./captcha");
 
 let page;
 
@@ -19,25 +20,30 @@ module.exports.multiCheckRating = ({
     return selectOption.click();
   }, option);
 
-module.exports.textRating = () =>
-  page.evaluate(msg => {
-    const input = document.getElementsByClassName(
-      "politeText required requiredtrim"
-    )[0];
-    return (input.value = msg);
-  }, message.generate());
-
-module.exports.selectRating = ({
-    option
-  }) =>
-  page.evaluate(opt => {
-    const select = document.getElementsByTagName("select")[0];
-    return (select.value = select.children[opt].value);
-  }, option);
-
-module.exports.submitRating = async () => {
-  return page.evaluate(() => {
-    const button = document.getElementsByClassName("btn")[0];
-    // return button.click();
+module.exports.textRating = async () => {
+  const input = await page.$("input[type=text]");
+  await input.focus();
+  return await page.keyboard.type(message.generate(), {
+    delay: 50,
   });
 }
+
+module.exports.selectRating = async ({
+  option
+}) => {
+  const value = await page.evaluate(opt => {
+    const select = document.getElementsByTagName("select")[0];
+    return select.children[opt].value;
+  }, option);
+
+  return page.select("select", value);
+}
+
+module.exports.submitRating = async () => {
+  await captcha.solve(page);
+
+  return page.evaluate(() => {
+    const button = document.getElementsByClassName("btn")[0];
+    return button.click();
+  });
+};
