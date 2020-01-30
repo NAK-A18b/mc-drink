@@ -25,7 +25,18 @@ module.exports.telegramBot = async ({ body }) => {
   telegram.start();
 
   if (!text.startsWith("/")) {
-    lambda.startTelegramApi(chat.id, text).promise();
+    console.log("start invoke");
+    lambda
+      .startTelegramApi(chat.id, text)
+      .promise()
+      .then(() => {
+        console.log("after invoke");
+        callback(null, null);
+      })
+      .catch(error => {
+        console.error(error);
+        callback(error);
+      });
     return response("Success");
   }
 
