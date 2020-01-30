@@ -37,34 +37,42 @@ module.exports.telegramBot = async ({ body }) => {
   return response("Success");
 };
 
-module.exports.telegramApi = async ({ body }) => {
-  telegram.start();
-  const { chatId, code } = body;
+module.exports.telegramApi = ({ body }) => {
+  return new Promise(async (resolve, reject) => {
+    telegram.start();
+    const { chatId, code } = body;
 
-  const apiError = async msg => {
-    await telegram.editMessage(chatId, messageId, msg);
-    return response(msg);
-  };
+    const apiError = async msg => {
+      await telegram.editMessage(chatId, messageId, msg);
+      return resolve(msg);
+    };
 
-  const messageId = await telegram.sendMessage(chatId, "Starting Survey...");
+    const messageId = await telegram.sendMessage(chatId, "Starting Survey...");
 
-  if (!mcDonalds.verifyCode(code)) return await apiError("Wrong Code");
+    if (!mcDonalds.verifyCode(code)) {
+      await apiError("Wrong Code");
+      return reject("Wrong Code");
+    }
 
-  const file = await mcDonalds
-    .doSurvey(code, telegram.statusUpdate(chatId, messageId))
-    .catch(error => ({
-      error,
-    }));
+    const file = await mcDonalds
+      .doSurvey(code, telegram.statusUpdate(chatId, messageId))
+      .catch(error => ({
+        error,
+      }));
 
-  if (file.error) return await apiError(file.error);
+    if (file.error) {
+      await apiError(file.error);
+      return reject(file.error);
+    }
 
-  if (!fs.existsSync("/tmp")) fs.mkdir("/tmp");
-  fs.writeFileSync("/tmp/coupon.pdf", file);
+    if (!fs.existsSync("/tmp")) fs.mkdir("/tmp");
+    fs.writeFileSync("/tmp/coupon.pdf", file);
 
-  await telegram.deleteMessage(chatId, messageId);
-  await telegram.sendDocument(chatId, "/tmp/coupon.pdf");
+    await telegram.deleteMessage(chatId, messageId);
+    await telegram.sendDocument(chatId, "/tmp/coupon.pdf");
 
-  return response("Success");
+    return resolve("Success");
+  });
 };
 
 module.exports.test = () => {

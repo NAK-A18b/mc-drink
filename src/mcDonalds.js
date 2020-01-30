@@ -25,7 +25,7 @@ module.exports.doSurvey = (code, statusCallback) => {
     await page.goto("https://mcdonalds.fast-insight.com/voc/de/de");
 
     await pageControlls.login(page, code);
-    await time.delay(500);
+    await time.delay(1000);
 
     const hasError = await page.$("#errorMessage");
     if (hasError) {
@@ -40,11 +40,7 @@ module.exports.doSurvey = (code, statusCallback) => {
 
     ratings.setup(page);
     for (let index = 0; index < pages.length; index++) {
-      const {
-        percentage,
-        action,
-        ...rest
-      } = pages[index];
+      const { percentage, action, ...rest } = pages[index];
 
       await statusCallback(percentage);
       await pageControlls.load(page, percentage);
