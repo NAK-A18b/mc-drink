@@ -39,7 +39,7 @@ module.exports.telegramBot = async ({ body }) => {
 
 module.exports.telegramApi = async ({ body }) => {
   telegram.start();
-  const { chatId, code } = process.env.IS_LOCAL ? body : JSON.parse(body);
+  const { chatId, code } = body;
 
   const apiError = async msg => {
     await telegram.editMessage(chatId, messageId, msg);
