@@ -14,38 +14,29 @@ const response = body => ({
   body: JSON.stringify(body),
 });
 
-module.exports.telegramBot = async ({ body }) => {
-  const { message } = process.env.IS_LOCAL ? body : JSON.parse(body);
-  if (!message) return response("Success");
+module.exports.telegramBot = ({ body }) => {
+  return new Promise(async (resolve, _) => {
+    const { message } = process.env.IS_LOCAL ? body : JSON.parse(body);
+    if (!message) return resolve(response("Success"));
 
-  const { chat, text } = message;
-  if (!text || !chat) return response("Success");
+    const { chat, text } = message;
+    if (!text || !chat) return resolve(response("Success"));
 
-  console.info(`Message from ${chat.id}: ${message}`);
-  telegram.start();
+    console.info(`Message from ${chat.id}: ${message}`);
+    telegram.start();
 
-  if (!text.startsWith("/")) {
-    console.log("start invoke");
-    lambda
-      .startTelegramApi(chat.id, text)
-      .promise()
-      .then(() => {
-        console.log("after invoke");
-        callback(null, null);
-      })
-      .catch(error => {
-        console.error(error);
-        callback(error);
-      });
-    return response("Success");
-  }
+    if (!text.startsWith("/")) {
+      resolve(response("Success"));
+      return await lambda.startTelegramApi(chat.id, text).promise();
+    }
 
-  const answer = bot.Commands.find(
-    ({ cmd }) => cmd === text.toLocaleLowerCase()
-  );
-  if (answer) await telegram.sendMessage(chat.id, answer.text);
+    const answer = bot.Commands.find(
+      ({ cmd }) => cmd === text.toLocaleLowerCase()
+    );
+    if (answer) await telegram.sendMessage(chat.id, answer.text);
 
-  return response("Success");
+    return resolve(response("Success"));
+  });
 };
 
 module.exports.telegramApi = ({ body }) => {
