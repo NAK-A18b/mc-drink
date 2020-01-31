@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "setup": "node src/scripts/telegram.js",
-    "telegram": "serverless invoke local -f telegramBot -p ./resources/dev/event.json",
+    "telegram:bot": "serverless invoke local -f telegramBot -p ./resources/dev/event.json",
+    "telegram:api": "serverless invoke local -f telegramApi -p ./resources/dev/event2.json",
     "start": "cross-env IS_OFFLINE=true sls offline",
     "test": "echo Running Tests",
     "secrets": "gpg --symmetric --cipher-algo AES256 ./secrets/secrets.yml"

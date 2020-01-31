@@ -42,8 +42,8 @@ module.exports.selectRating = async ({
 module.exports.submitRating = async () => {
   await captcha.solve(page);
 
-  return page.evaluate(() => {
-    const button = document.getElementsByClassName("btn")[0];
-    return button.click();
-  });
+  // return page.evaluate(() => {
+  //   const button = document.getElementsByClassName("btn")[0];
+  //   return button.click();
+  // });
 };

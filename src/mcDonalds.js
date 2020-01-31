@@ -54,17 +54,17 @@ module.exports.doSurvey = (code, statusCallback) => {
       await pageControlls.next(page);
     }
 
-    await page.content();
-    await page.waitForSelector("#lblCode1");
-    const spanElement = await page.$("#lblCode1");
-    const textHandle = await spanElement.getProperty("innerText");
-    const text = await textHandle.jsonValue();
+    // await page.content();
+    // await page.waitForSelector("#lblCode1");
+    // const spanElement = await page.$("#lblCode1");
+    // const textHandle = await spanElement.getProperty("innerText");
+    // const text = await textHandle.jsonValue();
 
-    const file = await fetch(
-      `https://survey.fast-insight.com/mcd/germany/coupon_pdf.php?code=${text}`
-    ).then(res => res.buffer());
+    // const file = await fetch(
+    //   `https://survey.fast-insight.com/mcd/germany/coupon_pdf.php?code=${text}`
+    // ).then(res => res.buffer());
 
-    await browser.close();
-    resolve(file);
+    // await browser.close();
+    // resolve(file);
   });
 };

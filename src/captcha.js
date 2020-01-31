@@ -24,7 +24,43 @@ module.exports.solve = async page => {
   }
 
   return page.evaluate(token => {
-    ___grecaptcha_cfg.clients[0].$.H.callback(token);
+    let checked = [];
+    const findCallback = (theObject) => {
+
+      var result = null;
+      if (theObject instanceof Array) {
+
+        for (var i = 0; i < theObject.length; i++) {
+          result = findCallback(theObject[i]);
+          if (result) {
+            break;
+          }
+        }
+
+      } else {
+        for (var prop in theObject) {
+
+          if (prop == 'callback') {
+            return theObject[prop];
+          }
+
+          if (!checked.includes(prop) && (theObject[prop] instanceof Object || theObject[prop] instanceof Array)) {
+            checked.push(prop);
+            result = findCallback(theObject[prop]);
+            if (result) {
+              return result;
+            }
+          }
+
+        }
+        return;
+      }
+
+      return result;
+    }
+
+    const callback = findCallback(___grecaptcha_cfg);
+    callback(token);
     document.getElementById("g-recaptcha-response").innerHTML = token;
-  }, solution.request);
+  }, token);
 }
