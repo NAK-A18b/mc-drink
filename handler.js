@@ -4,7 +4,7 @@ const fs = require("fs");
 const lambda = require("./src/lambda");
 const telegram = require("./src/telegram");
 const mcDonalds = require("./src/mcDonalds");
-const bot = require("./src/bot");
+const { Commands } = require("./src/bot");
 
 const response = body => ({
   statusCode: 200,
@@ -17,25 +17,32 @@ const response = body => ({
 module.exports.telegramBot = ({ body }) => {
   return new Promise(async (resolve, _) => {
     const { message } = process.env.IS_LOCAL ? body : JSON.parse(body);
-    if (!message) return resolve(response("Success"));
+    if (!message) {
+      resolve(response("Success"));
+      return;
+    }
 
     const { chat, text } = message;
-    if (!text || !chat) return resolve(response("Success"));
+    if (!text || !chat) {
+      resolve(response("Success"));
+      return;
+    }
 
-    console.info(`Message from ${chat.id}: ${message}`);
+    console.info(`Message from ${chat.id}: ${text}`);
     telegram.start();
 
     if (!text.startsWith("/")) {
+      await lambda.startTelegramApi(chat.id, text).promise();
       resolve(response("Success"));
-      return await lambda.startTelegramApi(chat.id, text).promise();
+      return;
     }
 
-    const answer = bot.Commands.find(
-      ({ cmd }) => cmd === text.toLocaleLowerCase()
-    );
-    if (answer) await telegram.sendMessage(chat.id, answer.text);
+    const answer = Commands.find(({ cmd }) => cmd === text.toLocaleLowerCase());
+    if (answer) {
+      await telegram.sendMessage(chat.id, answer.text);
+    }
 
-    return resolve(response("Success"));
+    resolve(response("Success"));
   });
 };
 
@@ -46,14 +53,16 @@ module.exports.telegramApi = ({ body }) => {
 
     const apiError = async msg => {
       await telegram.editMessage(chatId, messageId, msg);
-      return resolve(msg);
+      resolve(msg);
+      return;
     };
 
     const messageId = await telegram.sendMessage(chatId, "Starting Survey...");
 
     if (!mcDonalds.verifyCode(code)) {
       await apiError("Wrong Code");
-      return reject("Wrong Code");
+      reject("Wrong Code");
+      return;
     }
 
     const file = await mcDonalds
@@ -64,7 +73,8 @@ module.exports.telegramApi = ({ body }) => {
 
     if (file.error) {
       await apiError(file.error);
-      return reject(file.error);
+      reject(file.error);
+      return;
     }
 
     if (!fs.existsSync("/tmp")) fs.mkdir("/tmp");
@@ -73,11 +83,6 @@ module.exports.telegramApi = ({ body }) => {
     await telegram.deleteMessage(chatId, messageId);
     await telegram.sendDocument(chatId, "/tmp/coupon.pdf");
 
-    return resolve("Success");
+    resolve("Success");
   });
-};
-
-module.exports.test = () => {
-  console.log("test lamba");
-  return response("Success");
 };
