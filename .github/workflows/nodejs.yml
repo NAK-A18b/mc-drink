@@ -28,6 +28,7 @@ jobs:
 
   deploy:
     name: deploy
+    runs-on: ubuntu-latest
     needs: test
     steps:
       - name: serverless deploy
