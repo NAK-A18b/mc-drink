@@ -29,7 +29,7 @@ functions:
         Resource: "*"
   telegramApi:
     handler: handler.telegramApi
-    timeout: 60
+    timeout: 900
     environment:
       BOT_TOKEN: ${file(./secrets/secrets.yml):BOT_TOKEN}
       CHROME_PATH: ${file(./secrets/secrets.yml):CHROME_PATH}
