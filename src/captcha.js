@@ -16,7 +16,7 @@ module.exports.solve = async page => {
   let solution = await fetch(`https://2captcha.com/res.php?key=${captchaKey}&action=get&id=${captchaId}&json=1`).then(res => res.json());
   let count = 0;
 
-  while (solution.request === "CAPCHA_NOT_READY" && count < 20) {
+  while (solution.request === "CAPCHA_NOT_READY" && count < 30) {
     await time.delay(5000);
     solution = await fetch(`https://2captcha.com/res.php?key=${captchaKey}&action=get&id=${captchaId}&json=1`).then(res => res.json());
     count++;
@@ -62,5 +62,5 @@ module.exports.solve = async page => {
     const callback = findCallback(___grecaptcha_cfg);
     callback(token);
     document.getElementById("g-recaptcha-response").innerHTML = token;
-  }, token);
+  }, solution.request);
 }
