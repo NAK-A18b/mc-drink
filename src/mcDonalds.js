@@ -1,4 +1,5 @@
 const chromium = require("chrome-aws-lambda");
+const fetch = require("node-fetch");
 
 const ratings = require("./ratings");
 const pageControlls = require("./page");
