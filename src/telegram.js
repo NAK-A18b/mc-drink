@@ -17,14 +17,14 @@ module.exports.sendMessage = (id, text) =>
   })
   .then(res => res.message_id);
 
-module.exports.statusUpdate = (chatId, messageId) => percentage => {
+module.exports.statusUpdate = (chatId, messageId) => progress => {
   if (!messageId) {
     return;
   } else {
     return api.editMessageText({
       chat_id: chatId,
       message_id: messageId,
-      text: `⏳ ${percentage}%`,
+      text: `⏳ ${progress}${typeof progress === "string" ? '' : '%'}`,
     });
   }
 };

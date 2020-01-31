@@ -1,4 +1,5 @@
 const chromium = require("chrome-aws-lambda");
+const fetch = require("node-fetch");
 
 const ratings = require("./ratings");
 const pageControlls = require("./page");
@@ -40,9 +41,14 @@ module.exports.doSurvey = (code, statusCallback) => {
 
     ratings.setup(page);
     for (let index = 0; index < pages.length; index++) {
-      const { percentage, action, ...rest } = pages[index];
+      const {
+        percentage,
+        action,
+        message,
+        ...rest
+      } = pages[index];
 
-      await statusCallback(percentage);
+      await statusCallback(message || percentage);
       await pageControlls.load(page, percentage);
       await ratings[action](rest);
       await time.delay(500);
