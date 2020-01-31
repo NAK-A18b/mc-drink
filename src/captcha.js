@@ -5,6 +5,8 @@ const dataSiteKey = "6LfZ43cUAAAAAKTRpN6xjp9Fd7nZVDY86nUA-Zmh"
 const captchaKey = process.env.CAPTCHA_KEY
 
 module.exports.solve = async page => {
+  console.info("Starting captcha");
+
   const url = page.url();
   const res = await fetch(`https://2captcha.com/in.php?key=${captchaKey}&method=userrecaptcha&googlekey=${dataSiteKey}&pageurl=${url}&json=1`)
     .then(res => res.json())
@@ -18,7 +20,7 @@ module.exports.solve = async page => {
     await time.delay(5000);
     solution = await fetch(`https://2captcha.com/res.php?key=${captchaKey}&action=get&id=${captchaId}&json=1`).then(res => res.json());
     count++;
-    console.log(solution)
+    console.info(solution)
   }
 
   return page.evaluate(token => {

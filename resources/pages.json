@@ -68,5 +68,6 @@
     "option": 0
 }, {
     "action": "submitRating",
-    "percentage": "Solving captcha..."
+    "percentage": 100,
+    "message": "Solving captcha..."
 }]
