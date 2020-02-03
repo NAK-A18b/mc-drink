@@ -1,4 +1,4 @@
-const math = require("./utils/math");
+const math = require("./math");
 
 const messages = ["Schlechter Service", "Dreckige Toiletten", "Kaltes Essen", "Nette Bedienung"];
 

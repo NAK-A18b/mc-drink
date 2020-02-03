@@ -2,71 +2,90 @@
 const fs = require("fs");
 
 const lambda = require("./src/lambda");
-const telegram = require("./src/telegram");
+const {
+  startBot,
+  sendMessage,
+  parseInput,
+  editMessage,
+  statusUpdate,
+  deleteMessage,
+  sendDocument,
+} = require("./src/telegram");
 const mcDonalds = require("./src/mcDonalds");
-const { Commands } = require("./src/bot");
+const { findCommand } = require("./src/bot");
 
-const response = body => ({
+const response = {
   statusCode: 200,
   headers: {
     "Content-Type": "application/json",
   },
-  body: JSON.stringify(body),
-});
+  body: JSON.stringify({
+    message: "Success",
+  }),
+};
 
 module.exports.telegramBot = ({ body }) => {
   return new Promise(async (resolve, _) => {
     const { message } = process.env.IS_LOCAL ? body : JSON.parse(body);
     if (!message) {
-      resolve(response("Success"));
+      resolve(response);
       return;
     }
 
-    const { chat, text } = message;
-    if (!text || !chat) {
-      resolve(response("Success"));
+    const telegram = startBot();
+    const { chat, text, photo } = message;
+    console.info(`Message from ${chat.id}: ${JSON.stringify(message)}`);
+
+    if (!text && !photo) {
+      await sendMessage(telegram, chat.id, "Falsche Eingabe 😞");
+      resolve(response);
       return;
     }
 
-    console.info(`Message from ${chat.id}: ${text}`);
-    telegram.start();
-
-    if (!text.startsWith("/")) {
-      await lambda.startTelegramApi(chat.id, text).promise();
-      resolve(response("Success"));
-      return;
-    }
-
-    const answer = Commands.find(({ cmd }) => cmd === text.toLocaleLowerCase());
+    const answer = findCommand(text);
     if (answer) {
-      await telegram.sendMessage(chat.id, answer.text);
+      resolve(response);
+      await sendMessage(telegram, chat.id, answer.text);
+      return;
     }
 
-    resolve(response("Success"));
+    await lambda.startTelegramApi({
+      chatId: chat.id,
+      text,
+      photo,
+    });
+
+    resolve(response);
   });
 };
 
 module.exports.telegramApi = ({ body }) => {
   return new Promise(async (resolve, reject) => {
-    telegram.start();
-    const { chatId, code } = body;
+    const telegram = startBot();
+
+    const { chatId, photo, text } = body;
+    const code = await parseInput(telegram, chatId, text, photo);
 
     const apiError = async msg => {
-      await telegram.editMessage(chatId, messageId, msg);
+      await editMessage(telegram, chatId, messageId, `${msg} 😞`);
       resolve(msg);
       return;
     };
 
-    const messageId = await telegram.sendMessage(chatId, "Starting Survey...");
+    const messageId = await sendMessage(
+      telegram,
+      chatId,
+      "Starte Umrage... 🏋️‍♂️"
+    );
 
-    if (!mcDonalds.verifyCode(code)) {
-      await apiError("Wrong Code");
+    if (!code || !mcDonalds.verifyCode(code)) {
+      await apiError("Falsche Eingabe");
       reject("Wrong Code");
       return;
     }
 
     const file = await mcDonalds
-      .doSurvey(code, telegram.statusUpdate(chatId, messageId))
+      .doSurvey(code, statusUpdate(telegram, chatId, messageId))
       .catch(error => ({
         error,
       }));
@@ -80,8 +99,8 @@ module.exports.telegramApi = ({ body }) => {
     if (!fs.existsSync("/tmp")) fs.mkdir("/tmp");
     fs.writeFileSync("/tmp/coupon.pdf", file);
 
-    await telegram.deleteMessage(chatId, messageId);
-    await telegram.sendDocument(chatId, "/tmp/coupon.pdf");
+    await deleteMessage(telegram, chatId, messageId);
+    await sendDocument(telegram, chatId, "/tmp/coupon.pdf");
 
     resolve("Success");
   });

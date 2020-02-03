@@ -1,4 +1,4 @@
-module.exports.Commands = [{
+const Commands = [{
     cmd: "/start",
     text: "🔗 Verbunden\n" +
       "Bitte gib deinen 12-stelligen Rechnungs-Code ein.\n" +
@@ -20,3 +20,7 @@ module.exports.Commands = [{
       "- Alle Codes sind nur ein Mal einlösbar",
   },
 ];
+
+module.exports.findCommand = input => input && Commands.find(({
+  cmd
+}) => cmd === input.toLocaleLowerCase());

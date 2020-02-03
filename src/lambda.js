@@ -6,14 +6,11 @@ const lambda = new aws.Lambda({
   endpoint: dev.isLocal() ? "http://localhost:3002" : undefined,
 });
 
-module.exports.startTelegramApi = (chatId, code) =>
+module.exports.startTelegramApi = args =>
   lambda.invoke({
     FunctionName: "McDrink-dev-telegramApi",
     InvocationType: "Event",
     Payload: JSON.stringify({
-      body: {
-        chatId,
-        code,
-      },
+      body: args
     }),
-  });
+  }).promise();
