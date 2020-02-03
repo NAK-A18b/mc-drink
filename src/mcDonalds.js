@@ -10,6 +10,13 @@ const pages = require("../resources/pages.json");
 
 const chromepath = dev.isLocal() && process.env.CHROME_PATH;
 
+module.exports.findCode = text => {
+  if (!text) return;
+
+  const matches = text.match(/(\S{4})-(\S{4})-(\S{4})/);
+  if (matches) return matches[0];
+};
+
 module.exports.verifyCode = code => code.match(/^(\S{4})-?(\S{4})-?(\S{4})$/);
 
 const startBrowser = async () =>
@@ -39,18 +46,12 @@ module.exports.doSurvey = (code, statusCallback) => {
       return reject(error);
     }
 
-    ratings.setup(page);
     for (let index = 0; index < pages.length; index++) {
-      const {
-        percentage,
-        action,
-        message,
-        ...rest
-      } = pages[index];
+      const { percentage, action, message, ...rest } = pages[index];
 
       await statusCallback(message || percentage);
       await pageControlls.load(page, percentage);
-      await ratings[action](rest);
+      await ratings[action](page, rest);
       await time.delay(500);
       await pageControlls.next(page);
     }
