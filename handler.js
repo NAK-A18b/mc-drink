@@ -44,8 +44,8 @@ module.exports.telegramBot = ({ body }) => {
 
     const answer = findCommand(text);
     if (answer) {
-      resolve(response);
       await sendMessage(telegram, chat.id, answer.text);
+      resolve(response);
       return;
     }
 
