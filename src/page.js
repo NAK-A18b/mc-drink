@@ -7,7 +7,7 @@ module.exports.load = async (page, percentage) => {
   );
 };
 
-module.exports.next = (page, code) =>
+module.exports.next = page =>
   page.evaluate(() => document.getElementById("next-sbj-btn").click());
 
 module.exports.login = async (page, code) => {

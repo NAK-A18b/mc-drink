@@ -1,7 +1,9 @@
 const telegram = require("telegram-bot-api");
 const tesseract = require("./tesseract");
 
-const { BOT_TOKEN } = process.env;
+const {
+  BOT_TOKEN
+} = process.env;
 
 module.exports.startBot = () =>
   new telegram({
@@ -10,11 +12,11 @@ module.exports.startBot = () =>
 
 module.exports.sendMessage = (api, id, text) =>
   api
-    .sendMessage({
-      chat_id: id,
-      text,
-    })
-    .then(res => res.message_id);
+  .sendMessage({
+    chat_id: id,
+    text,
+  })
+  .then(res => res.message_id);
 
 module.exports.statusUpdate = (api, chatId, messageId) => progress => {
   if (!messageId) {
@@ -23,7 +25,7 @@ module.exports.statusUpdate = (api, chatId, messageId) => progress => {
     return api.editMessageText({
       chat_id: chatId,
       message_id: messageId,
-      text: `⏳ ${progress}${typeof progress === "string" ? "" : "%"}`,
+      text: progress,
     });
   }
 };
@@ -49,10 +51,10 @@ module.exports.editMessage = (api, chatId, messageId, message) =>
 
 module.exports.getFilePath = (api, fileId) =>
   api
-    .getFile({
-      file_id: fileId,
-    })
-    .then(res => res.file_path);
+  .getFile({
+    file_id: fileId,
+  })
+  .then(res => res.file_path);
 
 module.exports.fileUrl = filePath =>
   `https://api.telegram.org/file/bot${BOT_TOKEN}/${filePath}`;
