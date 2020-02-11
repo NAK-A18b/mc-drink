@@ -31,8 +31,8 @@ module.exports.selectRating = async (page, { option }) => {
   return page.select("select", value);
 };
 
-module.exports.submitRating = async page => {
-  await captcha.solve(page);
+module.exports.submitRating = async (page, _, statusCallback) => {
+  await captcha.solve(page, statusCallback);
 
   return page.evaluate(() => {
     const button = document.getElementsByClassName("btn")[0];

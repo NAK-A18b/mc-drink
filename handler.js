@@ -64,7 +64,9 @@ module.exports.telegramApi = ({ body }) => {
     const telegram = startBot();
 
     const { chatId, photo, text } = body;
-    const code = await parseInput(telegram, chatId, text, photo);
+    const code = await parseInput(telegram, chatId, text, photo).catch(e =>
+      console.error(e.message)
+    );
 
     const apiError = async msg => {
       await editMessage(telegram, chatId, messageId, `${msg} 😞`);
