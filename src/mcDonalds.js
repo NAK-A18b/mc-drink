@@ -1,8 +1,11 @@
 const chromium = require("chrome-aws-lambda");
 const fetch = require("node-fetch");
+const fs = require("fs");
+const path = require("path");
 
 const ratings = require("./ratings");
 const pageControlls = require("./page");
+
 const time = require("./utils/time");
 const dev = require("./utils/dev");
 
@@ -28,11 +31,11 @@ const startBrowser = async () =>
 
 module.exports.doSurvey = (code, statusCallback) => {
   return new Promise(async (resolve, reject) => {
-    try {
-      const browser = await startBrowser();
-      const page = await browser.newPage();
-      await page.goto("https://mcdonalds.fast-insight.com/voc/de/de");
+    const browser = await startBrowser();
+    const page = await browser.newPage();
 
+    try {
+      await page.goto("https://mcdonalds.fast-insight.com/voc/de/de");
       await pageControlls.login(page, code);
       await time.delay(1000);
 
@@ -51,7 +54,7 @@ module.exports.doSurvey = (code, statusCallback) => {
       for (let index = 0; index < pages.length; index++) {
         const { percentage, action, message, ...rest } = pages[index];
 
-        await statusCallback(`⏳ ${message || percentage}`);
+        await statusCallback(`⏳ ${message || `${percentage}%`}`);
         await pageControlls.load(page, percentage);
         await ratings[action](page, rest, statusCallback);
         await time.delay(500);
@@ -75,8 +78,12 @@ module.exports.doSurvey = (code, statusCallback) => {
       await browser.close();
       resolve(file);
     } catch (e) {
+      const print = await page.pdf();
+      const pdfPath = path.resolve(__dirname, "../tmp/error.pdf");
+      fs.writeFileSync(pdfPath, print);
+
       console.error("Error while doing survey: ", e.message);
-      reject(`Ein unbekannter Fehler ist aufgetreten: ${e.message}`);
+      reject(`Error while doing survey: ${e.message}`);
     }
   });
 };

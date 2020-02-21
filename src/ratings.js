@@ -1,4 +1,5 @@
 const message = require("./utils/message");
+
 const captcha = require("./captcha");
 
 module.exports.starRating = page =>
@@ -7,12 +8,15 @@ module.exports.starRating = page =>
     return star.click();
   });
 
-module.exports.multiCheckRating = (page, { option }) =>
-  page.evaluate(option => {
-    const options = document.getElementsByClassName("subject-answer onlyText");
-    const selectOption = options[0].children[option];
-    return selectOption.click();
-  }, option);
+module.exports.multiCheckRating = page =>
+  page.evaluate(() => {
+    const options = [...document.getElementsByClassName("option")].filter(
+      c => !c.classList.contains("linkto")
+    );
+
+    const random = Math.floor(Math.random() * (options.length - 0) + 0);
+    return options[random].click();
+  });
 
 module.exports.textRating = async page => {
   const input = await page.$("input[type=text]");
@@ -25,7 +29,9 @@ module.exports.textRating = async page => {
 module.exports.selectRating = async (page, { option }) => {
   const value = await page.evaluate(opt => {
     const select = document.getElementsByTagName("select")[0];
-    return select.children[opt].value;
+
+    const random = Math.floor(Math.random() * (select.children.length - 0) + 0);
+    return select.children[random].value;
   }, option);
 
   return page.select("select", value);

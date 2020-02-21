@@ -12,7 +12,10 @@ const {
   sendDocument,
 } = require("./src/telegram");
 const mcDonalds = require("./src/mcDonalds");
+const { notifyAdmins } = require("./src/monitoring");
 const { findCommand } = require("./src/bot");
+
+if (!fs.existsSync("/tmp")) fs.mkdir("/tmp");
 
 const response = {
   statusCode: 200,
@@ -64,25 +67,20 @@ module.exports.telegramApi = ({ body }) => {
     const telegram = startBot();
 
     const { chatId, photo, text } = body;
+    const messageId = await sendMessage(
+      telegram,
+      chatId,
+      "Eingabe wird validiert..."
+    );
     const code = await parseInput(telegram, chatId, text, photo).catch(e =>
       console.error(e.message)
     );
 
-    const apiError = async msg => {
-      await editMessage(telegram, chatId, messageId, `${msg} 😞`);
-      resolve(msg);
-      return;
-    };
-
-    const messageId = await sendMessage(
-      telegram,
-      chatId,
-      "Starte Umrage... 🏋️‍♂️"
-    );
+    await editMessage(telegram, chatId, messageId, "Starte Umfrage... 🏋️‍♂️");
 
     if (!code || !mcDonalds.verifyCode(code)) {
-      await apiError("Falsche Eingabe");
-      reject("Wrong Code");
+      await editMessage(telegram, chatId, messageId, `"Falsche Eingabe" 😞`);
+      resolve("Wrong Code");
       return;
     }
 
@@ -93,12 +91,17 @@ module.exports.telegramApi = ({ body }) => {
       }));
 
     if (file.error) {
-      await apiError(file.error);
-      reject(file.error);
+      await notifyAdmins(telegram, file.error);
+      await editMessage(
+        telegram,
+        chatId,
+        messageId,
+        "Ein unbekannter Fehler ist aufgetreten 😞"
+      );
+      resolve(`Ein unbekannter Fehler ist aufgetreten`);
       return;
     }
 
-    if (!fs.existsSync("/tmp")) fs.mkdir("/tmp");
     fs.writeFileSync("/tmp/coupon.pdf", file);
 
     await deleteMessage(telegram, chatId, messageId);

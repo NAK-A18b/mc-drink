@@ -29,10 +29,6 @@
     "option": 0
 }, {
     "action": "multiCheckRating",
-    "percentage": 66,
-    "option": 6
-}, {
-    "action": "multiCheckRating",
     "percentage": 69,
     "option": 5
 }, {
@@ -69,5 +65,5 @@
 }, {
     "action": "submitRating",
     "percentage": 100,
-    "message": "Solving captcha..."
+    "message": "Umfrage abgeschlossen..."
 }]
