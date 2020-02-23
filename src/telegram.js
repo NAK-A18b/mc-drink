@@ -61,6 +61,7 @@ module.exports.fileUrl = filePath =>
 
 module.exports.parseInput = async (api, chatId, messageId, message) => {
   if (message.text) {
+    await this.editMessage(api, chatId, messageId, "Starte Umfrage... 🏋️‍♂️");
     return message.text;
   }
 
@@ -72,20 +73,17 @@ module.exports.parseInput = async (api, chatId, messageId, message) => {
       api,
       photo[photo.length - 1].file_id
     );
-    const photoBuffer = await fetch(this.fileUrl(filePath)).then(res =>
-      res.buffer()
+
+    const code = await fetch(this.fileUrl(filePath))
+      .then(res => res.buffer())
+      .then(ocr.findCode);
+
+    await this.editMessage(
+      api,
+      chatId,
+      messageId,
+      `${code ? `Code: ${code} | ` : ""}Starte Umfrage... 🏋️‍♂️`
     );
-
-    const code = await ocr.findCode(photoBuffer);
-    if (code) {
-      await this.editMessage(
-        api,
-        chatId,
-        messageId,
-        `Code erkannt: ${code} 🥳`
-      );
-    }
-
     return code;
   }
 };

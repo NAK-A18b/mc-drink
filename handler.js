@@ -82,8 +82,6 @@ module.exports.telegramApi = ({ body }) => {
       message
     ).catch(e => console.error(e.message));
 
-    await editMessage(telegram, chatId, notificationId, "Starte Umfrage... 🏋️‍♂️");
-
     if (!code || !mcDonalds.verifyCode(code)) {
       await editMessage(telegram, chatId, notificationId, "Falsche Eingabe 😞");
       resolve("Wrong Code");
