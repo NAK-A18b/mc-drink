@@ -47,12 +47,19 @@ module.exports.doSurvey = (code, statusCallback) => {
         );
 
         await browser.close();
-        reject(error);
+        reject({
+          status: 200,
+          msg: error
+        });
         return;
       }
 
       for (let index = 0; index < pages.length; index++) {
-        const { percentage, action, message } = pages[index];
+        const {
+          percentage,
+          action,
+          message
+        } = pages[index];
 
         await statusCallback(`⏳ ${message || `${percentage}%`}`);
         await pageControlls.load(page, percentage);
@@ -84,7 +91,10 @@ module.exports.doSurvey = (code, statusCallback) => {
       }
 
       console.error("Error while doing survey: ", e.message);
-      reject(`Error while doing survey: ${e.message}`);
+      reject({
+        status: 500,
+        msg: `Error while doing survey: ${e.message}`,
+      });
     }
   });
 };
