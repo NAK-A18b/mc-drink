@@ -7,25 +7,29 @@
       "from": {
         "first_name": "Luis"
       },
-      "photo": [{
-        "file_id": "AgACAgIAAxkBAAICKF40K4m4RFsczRkUbUAzXBTmYv8XAAK0rDEbybigSfdcyJIKVnng26XCDwAEAQADAgADbQAD6tgDAAEYBA",
-        "file_unique_id": "AQAD26XCDwAE6tgDAAE",
-        "file_size": 11545,
-        "width": 180,
-        "height": 320
-      }, {
-        "file_id": "AgACAgIAAxkBAAICKF40K4m4RFsczRkUbUAzXBTmYv8XAAK0rDEbybigSfdcyJIKVnng26XCDwAEAQADAgADeAAD7NgDAAEYBA",
-        "file_unique_id": "AQAD26XCDwAE7NgDAAE",
-        "file_size": 41062,
-        "width": 450,
-        "height": 800
-      }, {
-        "file_id": "AgACAgIAAxkBAAICKF40K4m4RFsczRkUbUAzXBTmYv8XAAK0rDEbybigSfdcyJIKVnng26XCDwAEAQADAgADeQAD69gDAAEYBA",
-        "file_unique_id": "AQAD26XCDwAE69gDAAE",
-        "file_size": 62767,
-        "width": 720,
-        "height": 1280
-      }]
+      "photo": [
+        {
+          "file_id": "AgACAgIAAxkBAAIBc15Sh3hyW4L-KoYy40HvcXu33tdlAAJkrTEbDwORSg4hPr0wUEFDnoXBDwAEAQADAgADbQADds4EAAEYBA",
+          "file_unique_id": "AQADnoXBDwAEds4EAAE",
+          "file_size": 8881,
+          "width": 180,
+          "height": 320
+        },
+        {
+          "file_id": "AgACAgIAAxkBAAIBc15Sh3hyW4L-KoYy40HvcXu33tdlAAJkrTEbDwORSg4hPr0wUEFDnoXBDwAEAQADAgADeAADc84EAAEYBA",
+          "file_unique_id": "AQADnoXBDwAEc84EAAE",
+          "file_size": 32193,
+          "width": 450,
+          "height": 800
+        },
+        {
+          "file_id": "AgACAgIAAxkBAAIBc15Sh3hyW4L-KoYy40HvcXu33tdlAAJkrTEbDwORSg4hPr0wUEFDnoXBDwAEAQADAgADeQADdM4EAAEYBA",
+          "file_unique_id": "AQADnoXBDwAEdM4EAAE",
+          "file_size": 49008,
+          "width": 720,
+          "height": 1280
+        }
+      ]
     }
   }
 }

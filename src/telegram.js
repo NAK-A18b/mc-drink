@@ -1,5 +1,7 @@
 const telegram = require("telegram-bot-api");
-const tesseract = require("./tesseract");
+const fetch = require("node-fetch");
+
+const ocr = require("./ocr");
 
 const { BOT_TOKEN } = process.env;
 
@@ -70,9 +72,11 @@ module.exports.parseInput = async (api, chatId, messageId, message) => {
       api,
       photo[photo.length - 1].file_id
     );
-    const photoUrl = this.fileUrl(filePath);
-    const code = await tesseract.getCode(photoUrl);
+    const photoBuffer = await fetch(this.fileUrl(filePath)).then(res =>
+      res.buffer()
+    );
 
+    const code = await ocr.findCode(photoBuffer);
     if (code) {
       await this.editMessage(
         api,
@@ -81,6 +85,7 @@ module.exports.parseInput = async (api, chatId, messageId, message) => {
         `Code erkannt: ${code} 🥳`
       );
     }
+
     return code;
   }
 };
