@@ -1,16 +1,16 @@
 const telegram = require("./telegram");
-const path = require("path");
 
 const ADMINS = [876296520];
 
-module.exports.notifyAdmins = (telegramApi, msg) =>
+module.exports.notifyAdmins = (telegramApi, error, message) =>
   Promise.all(
     ADMINS.map(async chatId => {
-      await telegram.sendDocument(
+      await telegram.sendMessage(telegramApi, chatId, "Admin notification: ");
+      await telegram.sendDocument(telegramApi, chatId, "/tmp/error.pdf");
+      return await telegram.sendMessage(
         telegramApi,
         chatId,
-        path.resolve(__dirname, "../tmp/error.pdf")
+        `Error bei ${message.from.first_name}: ${error}`
       );
-      return await telegram.sendMessage(telegramApi, chatId, msg);
     })
   );

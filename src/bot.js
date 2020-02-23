@@ -1,3 +1,5 @@
+const math = require("./utils/math");
+
 const Commands = [{
     cmd: "/start",
     text: "🔗 Verbunden\n" +
@@ -24,3 +26,7 @@ const Commands = [{
 module.exports.findCommand = input => input && Commands.find(({
   cmd
 }) => cmd === input.toLocaleLowerCase());
+
+const messages = ["Service", "Toiletten", "Parkplatzgröße", "Bedienung", "Restaurant Sauberkeit"];
+
+module.exports.generateMessage = () => messages[math.randomNumber(0, messages.length)];
