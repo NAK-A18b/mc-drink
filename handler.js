@@ -14,14 +14,11 @@ const {
 const mcDonalds = require("./src/mcDonalds");
 const { notifyAdmins } = require("./src/monitoring");
 const { findCommand } = require("./src/bot");
-const { notifyAdmins } = require("./src/monitoring");
 
 // Create tmp directory for local development
 if (!fs.existsSync("/tmp")) {
   fs.mkdir("/tmp");
 }
-
-if (!fs.existsSync("/tmp")) fs.mkdir("/tmp");
 
 const response = {
   statusCode: 200,
@@ -78,11 +75,6 @@ module.exports.telegramApi = ({ body }) => {
       chatId,
       "Eingabe wird validiert..."
     );
-    const code = await parseInput(telegram, chatId, text, photo).catch(e =>
-      console.error(e.message)
-    );
-
-    await editMessage(telegram, chatId, messageId, "Starte Umfrage... 🏋️‍♂️");
 
     const code = await parseInput(
       telegram,
@@ -91,7 +83,7 @@ module.exports.telegramApi = ({ body }) => {
       photo
     ).catch(e => console.error(e.message));
 
-    await editMessage(telegram, chatId, messageId, "Starte Umrage... 🏋️‍♂️");
+    await editMessage(telegram, chatId, messageId, "Starte Umfrage... 🏋️‍♂️");
 
     if (!code || !mcDonalds.verifyCode(code)) {
       await editMessage(telegram, chatId, messageId, "Falsche Eingabe 😞");
@@ -101,19 +93,17 @@ module.exports.telegramApi = ({ body }) => {
 
     const file = await mcDonalds
       .doSurvey(code, statusUpdate(telegram, chatId, messageId))
-      .catch(error => ({
-        error,
-      }));
+      .catch(async error => {
+        let errorMessage = error.msg;
+        if (error.status === 500) {
+          await notifyAdmins(telegram, error.msg, message);
+          errorMessage = "Ein unbekannter Fehler ist aufgetreten 😞";
+        }
+        await editMessage(telegram, chatId, messageId, errorMessage);
+      });
 
-    if (file.error) {
-      await notifyAdmins(telegram, file.error, message);
-      await editMessage(
-        telegram,
-        chatId,
-        messageId,
-        "Ein unbekannter Fehler ist aufgetreten 😞"
-      );
-      resolve(`Ein unbekannter Fehler ist aufgetreten`);
+    if (!file) {
+      resolve(`Success`);
       return;
     }
 
