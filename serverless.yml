@@ -35,3 +35,8 @@ functions:
       BOT_TOKEN: ${file(./secrets/secrets.yml):BOT_TOKEN}
       CHROME_PATH: ${file(./secrets/secrets.yml):CHROME_PATH}
       CAPTCHA_KEY: ${file(./secrets/secrets.yml):CAPTCHA_KEY}
+    iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+          - textract:DetectDocumentText
+        Resource: "*"
