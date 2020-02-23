@@ -14,6 +14,12 @@ const {
 const mcDonalds = require("./src/mcDonalds");
 const { notifyAdmins } = require("./src/monitoring");
 const { findCommand } = require("./src/bot");
+const { notifyAdmins } = require("./src/monitoring");
+
+// Create tmp directory for local development
+if (!fs.existsSync("/tmp")) {
+  fs.mkdir("/tmp");
+}
 
 if (!fs.existsSync("/tmp")) fs.mkdir("/tmp");
 
@@ -54,7 +60,7 @@ module.exports.telegramBot = ({ body }) => {
 
     await lambda.startTelegramApi({
       chatId: chat.id,
-      text,
+      message,
       photo,
     });
 
@@ -66,7 +72,7 @@ module.exports.telegramApi = ({ body }) => {
   return new Promise(async (resolve, reject) => {
     const telegram = startBot();
 
-    const { chatId, photo, text } = body;
+    const { chatId, photo, message } = body;
     const messageId = await sendMessage(
       telegram,
       chatId,
@@ -78,8 +84,17 @@ module.exports.telegramApi = ({ body }) => {
 
     await editMessage(telegram, chatId, messageId, "Starte Umfrage... 🏋️‍♂️");
 
+    const code = await parseInput(
+      telegram,
+      chatId,
+      message.text,
+      photo
+    ).catch(e => console.error(e.message));
+
+    await editMessage(telegram, chatId, messageId, "Starte Umrage... 🏋️‍♂️");
+
     if (!code || !mcDonalds.verifyCode(code)) {
-      await editMessage(telegram, chatId, messageId, `"Falsche Eingabe" 😞`);
+      await editMessage(telegram, chatId, messageId, "Falsche Eingabe 😞");
       resolve("Wrong Code");
       return;
     }
@@ -91,7 +106,7 @@ module.exports.telegramApi = ({ body }) => {
       }));
 
     if (file.error) {
-      await notifyAdmins(telegram, file.error);
+      await notifyAdmins(telegram, file.error, message);
       await editMessage(
         telegram,
         chatId,

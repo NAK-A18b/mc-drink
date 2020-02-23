@@ -52,11 +52,11 @@ module.exports.doSurvey = (code, statusCallback) => {
       }
 
       for (let index = 0; index < pages.length; index++) {
-        const { percentage, action, message, ...rest } = pages[index];
+        const { percentage, action, message } = pages[index];
 
         await statusCallback(`⏳ ${message || `${percentage}%`}`);
         await pageControlls.load(page, percentage);
-        await ratings[action](page, rest, statusCallback);
+        await ratings[action](page, statusCallback);
         await time.delay(500);
         await pageControlls.next(page);
       }
@@ -78,9 +78,10 @@ module.exports.doSurvey = (code, statusCallback) => {
       await browser.close();
       resolve(file);
     } catch (e) {
-      const print = await page.pdf();
-      const pdfPath = path.resolve(__dirname, "../tmp/error.pdf");
-      fs.writeFileSync(pdfPath, print);
+      if (!dev.isLocal()) {
+        const print = await page.pdf();
+        fs.writeFileSync("/tmp/error.pdf", print);
+      }
 
       console.error("Error while doing survey: ", e.message);
       reject(`Error while doing survey: ${e.message}`);
