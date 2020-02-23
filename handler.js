@@ -58,7 +58,6 @@ module.exports.telegramBot = ({ body }) => {
     await lambda.startTelegramApi({
       chatId: chat.id,
       message,
-      photo,
     });
 
     resolve(response);
@@ -69,8 +68,8 @@ module.exports.telegramApi = ({ body }) => {
   return new Promise(async (resolve, reject) => {
     const telegram = startBot();
 
-    const { chatId, photo, message } = body;
-    const messageId = await sendMessage(
+    const { chatId, message } = body;
+    const notificationId = await sendMessage(
       telegram,
       chatId,
       "Eingabe wird validiert..."
@@ -79,27 +78,27 @@ module.exports.telegramApi = ({ body }) => {
     const code = await parseInput(
       telegram,
       chatId,
-      message.text,
-      photo
+      notificationId,
+      message
     ).catch(e => console.error(e.message));
 
-    await editMessage(telegram, chatId, messageId, "Starte Umfrage... 🏋️‍♂️");
+    await editMessage(telegram, chatId, notificationId, "Starte Umfrage... 🏋️‍♂️");
 
     if (!code || !mcDonalds.verifyCode(code)) {
-      await editMessage(telegram, chatId, messageId, "Falsche Eingabe 😞");
+      await editMessage(telegram, chatId, notificationId, "Falsche Eingabe 😞");
       resolve("Wrong Code");
       return;
     }
 
     const file = await mcDonalds
-      .doSurvey(code, statusUpdate(telegram, chatId, messageId))
+      .doSurvey(code, statusUpdate(telegram, chatId, notificationId))
       .catch(async error => {
         let errorMessage = error.msg;
         if (error.status === 500) {
           await notifyAdmins(telegram, error.msg, message);
           errorMessage = "Ein unbekannter Fehler ist aufgetreten 😞";
         }
-        await editMessage(telegram, chatId, messageId, errorMessage);
+        await editMessage(telegram, chatId, notificationId, errorMessage);
       });
 
     if (!file) {
@@ -109,7 +108,7 @@ module.exports.telegramApi = ({ body }) => {
 
     fs.writeFileSync("/tmp/coupon.pdf", file);
 
-    await deleteMessage(telegram, chatId, messageId);
+    await deleteMessage(telegram, chatId, notificationId);
     await sendDocument(telegram, chatId, "/tmp/coupon.pdf");
 
     resolve("Success");
