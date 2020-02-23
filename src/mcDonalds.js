@@ -13,13 +13,6 @@ const pages = require("../resources/pages.json");
 
 const chromepath = dev.isLocal() && process.env.CHROME_PATH;
 
-module.exports.findCode = text => {
-  if (!text) return;
-
-  const matches = text.match(/(\S{4})-(\S{4})-(\S{4})/);
-  if (matches) return matches[0];
-};
-
 module.exports.verifyCode = code => code.match(/^(\S{4})-?(\S{4})-?(\S{4})$/);
 
 const startBrowser = async () =>
@@ -49,17 +42,13 @@ module.exports.doSurvey = (code, statusCallback) => {
         await browser.close();
         reject({
           status: 200,
-          msg: error
+          msg: error,
         });
         return;
       }
 
       for (let index = 0; index < pages.length; index++) {
-        const {
-          percentage,
-          action,
-          message
-        } = pages[index];
+        const { percentage, action, message } = pages[index];
 
         await statusCallback(`⏳ ${message || `${percentage}%`}`);
         await pageControlls.load(page, percentage);
