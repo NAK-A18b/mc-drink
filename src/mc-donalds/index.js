@@ -1,15 +1,14 @@
 const chromium = require("chrome-aws-lambda");
 const fetch = require("node-fetch");
 const fs = require("fs");
-const path = require("path");
 
 const ratings = require("./ratings");
 const pageControlls = require("./page");
 
-const time = require("./utils/time");
-const dev = require("./utils/dev");
+const time = require("../utils/time");
+const dev = require("../utils/dev");
 
-const pages = require("../resources/pages.json");
+const pages = require("../../resources/pages.json");
 
 const chromepath = dev.isLocal() && process.env.CHROME_PATH;
 
@@ -21,6 +20,16 @@ const startBrowser = async () =>
     executablePath: chromepath || (await chromium.executablePath),
     headless: !dev.isLocal(),
   });
+
+const getCode = async page => {
+  await page.waitForSelector("#lblCode1");
+  const spanElement = await page.$("#lblCode1");
+  const textHandle = await spanElement.getProperty("innerText");
+  return await textHandle.jsonValue();
+};
+
+const couponUrl = code =>
+  `https://survey.fast-insight.com/mcd/germany/coupon_pdf.php?code=${code}`;
 
 module.exports.doSurvey = (code, statusCallback) => {
   return new Promise(async (resolve, reject) => {
@@ -61,15 +70,9 @@ module.exports.doSurvey = (code, statusCallback) => {
       await page.waitForNavigation({
         waitUntil: "networkidle0",
       });
-      await page.waitForSelector("#lblCode1");
 
-      const spanElement = await page.$("#lblCode1");
-      const textHandle = await spanElement.getProperty("innerText");
-      const text = await textHandle.jsonValue();
-
-      const file = await fetch(
-        `https://survey.fast-insight.com/mcd/germany/coupon_pdf.php?code=${text}`
-      ).then(res => res.buffer());
+      const text = await getCode(page);
+      const file = await fetch(couponUrl(text)).then(res => res.buffer());
 
       await browser.close();
       resolve(file);

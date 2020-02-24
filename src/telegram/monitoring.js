@@ -1,4 +1,4 @@
-const telegram = require("./telegram");
+const telegram = require(".");
 
 const ADMINS = [876296520];
 

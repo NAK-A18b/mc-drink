@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
-const time = require("./utils/time");
+
+const time = require("../utils/time");
 
 const captchaKey = process.env.CAPTCHA_KEY;
 

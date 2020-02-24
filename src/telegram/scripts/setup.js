@@ -3,13 +3,14 @@ const YAML = require("yaml");
 const fs = require("fs");
 const path = require("path");
 
-const file = fs.readFileSync(path.resolve(__dirname, '../../secrets/secrets.yml'), 'utf8')
+const file = fs.readFileSync(
+  path.resolve(__dirname, "../../../secrets/secrets.yml"),
+  "utf8"
+);
 const secrets = YAML.parse(file);
 
-const requestUrl = (
-  method,
-  token
-) => `https://api.telegram.org/bot${token}/${method}`;
+const requestUrl = (method, token) =>
+  `https://api.telegram.org/bot${token}/${method}`;
 
 const setHook = webhookUrl =>
   fetch(requestUrl("setWebhook", secrets.BOT_TOKEN), {
@@ -24,4 +25,4 @@ const setHook = webhookUrl =>
 
 setHook(secrets.LAMBDA_PATH)
   .then(res => res.json())
-  .then(console.log)
+  .then(console.log);

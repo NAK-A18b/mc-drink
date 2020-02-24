@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "setup": "node src/scripts/setup.js",
-    "status": "node src/scripts/status.js",
+    "setup": "node src/telegram/scripts/setup.js",
+    "status": "node src/telegram/scripts/status.js",
     "telegram:bot": "serverless invoke local -f telegramBot -p ./resources/dev/event.json",
     "telegram:api": "serverless invoke local -f telegramApi -p ./resources/dev/event2.json",
     "start": "cross-env IS_OFFLINE=true sls offline",

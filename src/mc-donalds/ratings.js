@@ -1,6 +1,6 @@
-const { generateMessage } = require("./bot");
+const { generateMessage } = require("../bot");
 
-const captcha = require("./captcha");
+const captcha = require("../captcha");
 
 module.exports.starRating = page =>
   page.evaluate(() => {

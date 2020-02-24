@@ -1,7 +1,7 @@
 const telegram = require("telegram-bot-api");
 const fetch = require("node-fetch");
 
-const ocr = require("./ocr");
+const ocr = require("../aws/ocr");
 
 const { BOT_TOKEN } = process.env;
 
@@ -67,7 +67,7 @@ module.exports.parseInput = async (api, chatId, messageId, message) => {
 
   if (message.photo) {
     const { photo } = message;
-    await this.editMessage(api, chatId, messageId, `Suche deinen Code... 🕵️‍♂️`);
+    await this.editMessage(api, chatId, messageId, "Suche deinen Code... 🕵️‍♂️");
 
     const filePath = await this.getFilePath(
       api,

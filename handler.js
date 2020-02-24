@@ -1,7 +1,7 @@
 "use strict";
 const fs = require("fs");
 
-const lambda = require("./src/lambda");
+const lambda = require("./src/aws/lambda");
 const {
   startBot,
   sendMessage,
@@ -11,8 +11,8 @@ const {
   deleteMessage,
   sendDocument,
 } = require("./src/telegram");
-const mcDonalds = require("./src/mcDonalds");
-const { notifyAdmins } = require("./src/monitoring");
+const mcDonalds = require("./src/mc-donalds");
+const { notifyAdmins } = require("./src/telegram/monitoring");
 const { findCommand } = require("./src/bot");
 
 // Create tmp directory for local development

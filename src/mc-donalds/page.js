@@ -1,4 +1,4 @@
-const time = require("./utils/time");
+const time = require("../utils/time");
 
 module.exports.load = async (page, percentage) => {
   await page.waitForSelector(".progress-number");
