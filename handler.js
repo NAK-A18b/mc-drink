@@ -64,7 +64,7 @@ module.exports.telegramBot = ({ body }) => {
     }
 
     const { chat, text, photo } = payload.message;
-    console.info(`Message from ${chat.id}: ${JSON.stringify(message)}`);
+    console.info(`Message from ${chat.id}: ${JSON.stringify(payload.message)}`);
 
     if (!text && !photo) {
       await sendMessage(telegram, chat.id, "Falsche Eingabe 😞");
