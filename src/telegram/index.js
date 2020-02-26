@@ -18,11 +18,12 @@ module.exports.inlineButton = text => ({
   },
 });
 
-module.exports.sendMessage = (api, id, text) =>
+module.exports.sendMessage = (api, id, text, args) =>
   api
     .sendMessage({
       chat_id: id,
       text,
+      ...args,
     })
     .then(res => res.message_id);
 
@@ -50,11 +51,12 @@ module.exports.sendDocument = (api, chatId, file) =>
     document: file,
   });
 
-module.exports.editMessage = (api, chatId, messageId, message) =>
+module.exports.editMessage = (api, chatId, messageId, message, args) =>
   api.editMessageText({
     chat_id: chatId,
     message_id: messageId,
     text: message,
+    ...args,
   });
 
 module.exports.getFilePath = (api, fileId) =>

@@ -41,20 +41,22 @@ module.exports.telegramBot = ({ body }) => {
       payload.callback_query &&
       payload.callback_query.data === "REMOVE_CALLBACK"
     ) {
-      const { id, message: callbackMessage } = payload.callback_query;
-      await telegram
-        .answerCallbackQuery({
+      try {
+        const { id, message: callbackMessage } = payload.callback_query;
+        await telegram.answerCallbackQuery({
           inline_query_id: id,
           results: JSON.stringify([[]]),
-        })
-        .catch(() => resolve(response));
-      await deleteMessage(
-        telegram,
-        callbackMessage.chat.id,
-        callbackMessage.message_id
-      );
-
-      resolve(response);
+        });
+        await deleteMessage(
+          telegram,
+          callbackMessage.chat.id,
+          callbackMessage.message_id
+        );
+        resolve(response);
+      } catch (e) {
+        console.error(e);
+        resolve(response);
+      }
       return;
     }
 
@@ -99,14 +101,6 @@ module.exports.telegramApi = ({ body }) => {
       "Eingabe wird validiert..."
     );
 
-    telegram.sendMessage({
-      chat_id: chatId,
-      text: "test",
-      reply_markup: JSON.stringify({
-        inline_keyboard: [[{ text: "test", callback_data: "REMOVE_CALLBACK" }]],
-      }),
-    });
-
     const code = await parseInput(
       telegram,
       chatId,
@@ -128,7 +122,13 @@ module.exports.telegramApi = ({ body }) => {
           await notifyAdmins(telegram, error.msg, message);
           errorMessage = "Ein unbekannter Fehler ist aufgetreten 😞";
         }
-        await editMessage(telegram, chatId, notificationId, errorMessage);
+        await editMessage(telegram, chatId, notificationId, errorMessage, {
+          reply_markup: JSON.stringify({
+            inline_keyboard: [
+              [{ text: "remove", callback_data: "REMOVE_CALLBACK" }],
+            ],
+          }),
+        });
       });
 
     if (!file) {
