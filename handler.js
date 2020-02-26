@@ -14,6 +14,7 @@ const {
 const mcDonalds = require("./src/mc-donalds");
 const { notifyAdmins } = require("./src/telegram/monitoring");
 const { findCommand } = require("./src/bot");
+const { isLocal } = require("./src/utils/dev");
 
 // Create tmp directory for local development
 if (!fs.existsSync("/tmp")) {
@@ -32,7 +33,8 @@ const response = {
 
 module.exports.telegramBot = ({ body }) => {
   return new Promise(async (resolve, _) => {
-    const { message } = process.env.IS_LOCAL ? body : JSON.parse(body);
+    console.log(JSON.parse(body));
+    const { message } = isLocal() ? body : JSON.parse(body);
     if (!message) {
       resolve(response);
       return;

@@ -10,6 +10,14 @@ module.exports.startBot = () =>
     token: BOT_TOKEN,
   });
 
+module.exports.inlineButton = text => ({
+  text,
+  callback_data: {
+    text,
+    action: "DELETE",
+  },
+});
+
 module.exports.sendMessage = (api, id, text) =>
   api
     .sendMessage({
