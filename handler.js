@@ -33,14 +33,28 @@ const response = {
 
 module.exports.telegramBot = ({ body }) => {
   return new Promise(async (resolve, _) => {
-    console.log(JSON.parse(body));
-    const { message } = isLocal() ? body : JSON.parse(body);
+    const { message, callback_query } = isLocal() ? body : JSON.parse(body);
+    console.log(!isLocal() && JSON.parse(body));
+    const telegram = startBot();
+
+    if (callback_query && callback_query.data === "REMOVE_CALLBACK") {
+      const { id, message: callbackMessage } = callback_query;
+      await telegram.answerCallbackQuery({
+        inline_query_id: id,
+        results: JSON.stringify([[]]),
+      });
+      await deleteMessage(
+        telegram,
+        callbackMessage.chat.id,
+        callbackMessage.message_id
+      );
+    }
+
     if (!message) {
       resolve(response);
       return;
     }
 
-    const telegram = startBot();
     const { chat, text, photo } = message;
     console.info(`Message from ${chat.id}: ${JSON.stringify(message)}`);
 
@@ -76,6 +90,14 @@ module.exports.telegramApi = ({ body }) => {
       chatId,
       "Eingabe wird validiert..."
     );
+
+    telegram.sendMessage({
+      chat_id: chatId,
+      text: "test",
+      reply_markup: JSON.stringify({
+        inline_keyboard: [[{ text: "test", callback_data: "REMOVE_CALLBACK" }]],
+      }),
+    });
 
     const code = await parseInput(
       telegram,
