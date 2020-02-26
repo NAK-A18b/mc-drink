@@ -1,35 +1,25 @@
 {
   "body": {
-    "message": {
-      "chat": {
-        "id": 876296520
-      },
+    "update_id": 500429783,
+    "callback_query": {
+      "id": "3763664896729539341",
       "from": {
-        "first_name": "Luis"
+        "id": 876296520,
+        "is_bot": false,
+        "first_name": "Luis",
+        "last_name": "Meyer",
+        "language_code": "de"
       },
-      "photo": [
-        {
-          "file_id": "AgACAgIAAxkBAAIBnl5T-QABpHJ_z9mB5T0tpaN2lDq83QACz6wxG-5LoUrZjM_o4UxFY-C_wg8ABAEAAwIAA20AA_D8AwABGAQ",
-          "file_unique_id": "AQAD4L_CDwAE8PwDAAE",
-          "file_size": 9047,
-          "width": 180,
-          "height": 320
-        },
-        {
-          "file_id": "AgACAgIAAxkBAAIBnl5T-QABpHJ_z9mB5T0tpaN2lDq83QACz6wxG-5LoUrZjM_o4UxFY-C_wg8ABAEAAwIAA3gAA_L8AwABGAQ",
-          "file_unique_id": "AQAD4L_CDwAE8vwDAAE",
-          "file_size": 36865,
-          "width": 450,
-          "height": 800
-        },
-        {
-          "file_id": "AgACAgIAAxkBAAIBnl5T-QABpHJ_z9mB5T0tpaN2lDq83QACz6wxG-5LoUrZjM_o4UxFY-C_wg8ABAEAAwIAA3kAA_H8AwABGAQ",
-          "file_unique_id": "AQAD4L_CDwAE8fwDAAE",
-          "file_size": 59459,
-          "width": 720,
-          "height": 1280
+      "message": {
+        "message_id": 452,
+        "date": 1582720799,
+        "text": "test",
+        "chat": {
+          "id": 876296520
         }
-      ]
+      },
+      "chat_instance": "7035210487046055559",
+      "data": "REMOVE_CALLBACK"
     }
   }
 }

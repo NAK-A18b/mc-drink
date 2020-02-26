@@ -33,29 +33,37 @@ const response = {
 
 module.exports.telegramBot = ({ body }) => {
   return new Promise(async (resolve, _) => {
-    const { message, callback_query } = isLocal() ? body : JSON.parse(body);
-    console.log(!isLocal() && JSON.parse(body));
+    const payload = isLocal() ? body : JSON.parse(body);
+    console.log(payload);
     const telegram = startBot();
 
-    if (callback_query && callback_query.data === "REMOVE_CALLBACK") {
-      const { id, message: callbackMessage } = callback_query;
-      await telegram.answerCallbackQuery({
-        inline_query_id: id,
-        results: JSON.stringify([[]]),
-      });
+    if (
+      payload.callback_query &&
+      payload.callback_query.data === "REMOVE_CALLBACK"
+    ) {
+      const { id, message: callbackMessage } = payload.callback_query;
+      await telegram
+        .answerCallbackQuery({
+          inline_query_id: id,
+          results: JSON.stringify([[]]),
+        })
+        .catch(() => resolve(response));
       await deleteMessage(
         telegram,
         callbackMessage.chat.id,
         callbackMessage.message_id
       );
-    }
 
-    if (!message) {
       resolve(response);
       return;
     }
 
-    const { chat, text, photo } = message;
+    if (!payload.message) {
+      resolve(response);
+      return;
+    }
+
+    const { chat, text, photo } = payload.message;
     console.info(`Message from ${chat.id}: ${JSON.stringify(message)}`);
 
     if (!text && !photo) {
@@ -73,7 +81,7 @@ module.exports.telegramBot = ({ body }) => {
 
     await lambda.startTelegramApi({
       chatId: chat.id,
-      message,
+      message: payload.message,
     });
 
     resolve(response);
