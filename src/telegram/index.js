@@ -10,12 +10,10 @@ module.exports.startBot = () =>
     token: BOT_TOKEN,
   });
 
-module.exports.inlineButton = text => ({
-  text,
-  callback_data: {
-    text,
-    action: "DELETE",
-  },
+module.exports.inlineButton = (text, id) => ({
+  reply_markup: JSON.stringify({
+    inline_keyboard: [[{ text: text, callback_data: id }]],
+  }),
 });
 
 module.exports.sendMessage = (api, id, text, args) =>

@@ -1,8 +1,8 @@
 {
   "body": {
-    "update_id": 500429783,
+    "update_id": 500429815,
     "callback_query": {
-      "id": "3763664896729539341",
+      "id": "3763664898744821661",
       "from": {
         "id": 876296520,
         "is_bot": false,
@@ -11,12 +11,16 @@
         "language_code": "de"
       },
       "message": {
-        "message_id": 452,
-        "date": 1582720799,
-        "text": "test",
+        "message_id": 478,
         "chat": {
-          "id": 876296520
-        }
+          "id": 876296520,
+          "first_name": "Luis",
+          "last_name": "Meyer",
+          "type": "private"
+        },
+        "date": 1582803678,
+        "edit_date": 1582803685,
+        "text": "Code nicht gültig"
       },
       "chat_instance": "7035210487046055559",
       "data": "REMOVE_CALLBACK"

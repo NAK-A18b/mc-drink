@@ -43,9 +43,9 @@ module.exports.telegramBot = ({ body }) => {
     ) {
       try {
         const { id, message: callbackMessage } = payload.callback_query;
+        console.log(id);
         await telegram.answerCallbackQuery({
-          inline_query_id: id,
-          results: JSON.stringify([[]]),
+          callback_query_id: id,
         });
         await deleteMessage(
           telegram,
@@ -122,13 +122,7 @@ module.exports.telegramApi = ({ body }) => {
           await notifyAdmins(telegram, error.msg, message);
           errorMessage = "Ein unbekannter Fehler ist aufgetreten 😞";
         }
-        await editMessage(telegram, chatId, notificationId, errorMessage, {
-          reply_markup: JSON.stringify({
-            inline_keyboard: [
-              [{ text: "remove", callback_data: "REMOVE_CALLBACK" }],
-            ],
-          }),
-        });
+        await editMessage(telegram, chatId, notificationId, errorMessage);
       });
 
     if (!file) {
