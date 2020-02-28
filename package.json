@@ -10,7 +10,7 @@
     "telegram:api": "serverless invoke local -f telegramApi -p ./resources/dev/event2.json",
     "start": "cross-env IS_OFFLINE=true sls offline",
     "test": "echo Running Tests",
-    "secrets": "gpg --symmetric --cipher-algo AES256 ./secrets/secrets.yml",
+    "secrets": "gpg --symmetric --cipher-algo AES256 ./secrets/dev-secrets.yml && gpg --symmetric --cipher-algo AES256 ./secrets/prod-secrets.yml",
     "deploy": "serverless deploy --stage dev"
   },
   "repository": {

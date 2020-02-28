@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 
 const file = fs.readFileSync(
-  path.resolve(__dirname, "../../../secrets/secrets.yml"),
+  path.resolve(__dirname, `../../../secrets/${process.env.STAGE}-secrets.yml`),
   "utf8"
 );
 const secrets = YAML.parse(file);

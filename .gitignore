@@ -271,7 +271,7 @@ modules.xml
 # End of https://www.gitignore.io/api/node,intellij,phpstorm,serverless,visualstudiocode
 
 # Custom
-secrets.yml
+*-secrets.yml
 .DS_Store
 test.js
 deu.traineddata

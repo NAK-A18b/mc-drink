@@ -23,7 +23,7 @@ functions:
           method: ANY
           cors: true
     environment:
-      BOT_TOKEN: ${file(./secrets/secrets.yml):BOT_TOKEN}
+      BOT_TOKEN: ${file(./secrets/${self:provider.stage}-secrets.yml):BOT_TOKEN}
     iamRoleStatements:
       - Effect: "Allow"
         Action:
@@ -34,9 +34,9 @@ functions:
     handler: handler.telegramApi
     timeout: 900
     environment:
-      BOT_TOKEN: ${file(./secrets/secrets.yml):BOT_TOKEN}
-      CHROME_PATH: ${file(./secrets/secrets.yml):CHROME_PATH}
-      CAPTCHA_KEY: ${file(./secrets/secrets.yml):CAPTCHA_KEY}
+      BOT_TOKEN: ${file(./secrets/${self:provider.stage}-secrets.yml):BOT_TOKEN}
+      CHROME_PATH: ${file(./secrets/${self:provider.stage}-secrets.yml):CHROME_PATH}
+      CAPTCHA_KEY: ${file(./secrets/${self:provider.stage}-secrets.yml):CAPTCHA_KEY}
     iamRoleStatements:
       - Effect: "Allow"
         Action:
