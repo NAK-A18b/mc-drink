@@ -42,10 +42,9 @@ module.exports.telegramBot = ({ body }) => {
       payload.callback_query.data === "REMOVE_CALLBACK"
     ) {
       try {
-        const { id, message: callbackMessage } = payload.callback_query;
-        console.log(id);
+        const { message: callbackMessage } = payload.callback_query;
         await telegram.answerCallbackQuery({
-          callback_query_id: id,
+          callback_query_id: callbackMessage.message_id,
         });
         await deleteMessage(
           telegram,
