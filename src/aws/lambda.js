@@ -10,7 +10,7 @@ const lambda = new AWS.Lambda({
 module.exports.startTelegramApi = args =>
   lambda
     .invoke({
-      FunctionName: "McDrink-dev-telegramApi",
+      FunctionName: `McDrink-${process.env.STAGE}-telegramApi`,
       InvocationType: "Event",
       Payload: JSON.stringify({
         body: args,

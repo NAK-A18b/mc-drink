@@ -5,7 +5,9 @@ provider:
   name: aws
   runtime: nodejs12.x
   region: eu-central-1
-  stage: dev
+  stage: ${opt:stage, 'dev'}
+  environment:
+    STAGE: ${self:provider.stage}
 
 plugins:
   - serverless-offline
