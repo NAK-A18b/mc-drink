@@ -17,3 +17,13 @@ module.exports.startTelegramApi = args =>
       }),
     })
     .promise();
+
+module.exports.SUCCESS_REPONSE = {
+  statusCode: 200,
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    message: "Success",
+  }),
+};

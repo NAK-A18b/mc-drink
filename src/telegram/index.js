@@ -1,14 +1,7 @@
-const telegram = require("telegram-bot-api");
 const fetch = require("node-fetch");
-
 const ocr = require("../aws/ocr");
 
 const { BOT_TOKEN } = process.env;
-
-module.exports.start = () =>
-  new telegram({
-    token: BOT_TOKEN,
-  });
 
 module.exports.inlineButton = (text, id) => ({
   reply_markup: JSON.stringify({
@@ -24,6 +17,21 @@ module.exports.statusUpdate = (api, chatId, messageId) => progress => {
       chat_id: chatId,
       message_id: messageId,
       text: progress,
+    });
+  }
+};
+
+module.exports.handleCallbackQuery = async (telegram, callbackQuery) => {
+  if (callbackQuery.data === "REMOVE_CALLBACK") {
+    const { id, message: callbackMessage } = callbackQuery;
+
+    await telegram.answerCallbackQuery({
+      callback_query_id: id,
+    });
+
+    await telegram.deleteMessage({
+      chat_id: callbackMessage.chat.id,
+      message_id: callbackMessage.message_id,
     });
   }
 };
