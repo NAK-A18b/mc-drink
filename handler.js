@@ -119,6 +119,7 @@ module.exports.telegramApi = ({ body }) => {
         message_id: notificationId,
         text: "Falsche Eingabe 😞",
       });
+
       resolve("Wrong Code");
       return;
     }
@@ -152,6 +153,7 @@ module.exports.telegramApi = ({ body }) => {
     await telegram.sendDocument({
       chat_id: chatId,
       document: "/tmp/coupon.pdf",
+      ...inlineButton("eingelöst ✅", "REMOVE_CALLBACK"),
     });
 
     resolve("Success");

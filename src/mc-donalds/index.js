@@ -71,8 +71,11 @@ module.exports.doSurvey = (code, statusCallback) => {
         waitUntil: "networkidle0",
       });
 
-      const text = await getCode(page);
-      const file = await fetch(couponUrl(text)).then(res => res.buffer());
+      const voucherCode = await getCode(page);
+      console.log("Vouchercode: ", voucherCode);
+      const file = await fetch(couponUrl(voucherCode)).then(res =>
+        res.buffer()
+      );
 
       await browser.close();
       resolve(file);
