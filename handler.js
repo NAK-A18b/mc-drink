@@ -106,12 +106,6 @@ module.exports.telegramApi = ({ body }) => {
       })
       .then(res => res.message_id);
 
-    await telegram.sendMessage({
-      chat_id: chatId,
-      text: "Test",
-      ...inlineButton("löschen", "REMOVE_CALLBACK"),
-    });
-
     const code = await parseInput(
       telegram,
       chatId,
@@ -120,7 +114,7 @@ module.exports.telegramApi = ({ body }) => {
     ).catch(e => console.error(e.message));
 
     if (!code || !mcDonalds.verifyCode(code)) {
-      telegram.editMessageText({
+      await telegram.editMessageText({
         chat_id: chatId,
         message_id: notificationId,
         text: "Falsche Eingabe 😞",
@@ -137,7 +131,7 @@ module.exports.telegramApi = ({ body }) => {
           await notifyAdmins(telegram, error.msg, message);
           errorMessage = "Ein unbekannter Fehler ist aufgetreten 😞";
         }
-        telegram.editMessageText({
+        await telegram.editMessageText({
           chat_id: chatId,
           message_id: notificationId,
           text: errorMessage,
