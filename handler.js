@@ -3,13 +3,10 @@ const fs = require("fs");
 
 const lambda = require("./src/aws/lambda");
 const {
-  startBot,
-  sendMessage,
+  start,
   parseInput,
-  editMessage,
   statusUpdate,
-  deleteMessage,
-  sendDocument,
+  inlineButton,
 } = require("./src/telegram");
 const mcDonalds = require("./src/mc-donalds");
 const { notifyAdmins } = require("./src/telegram/monitoring");
@@ -35,22 +32,23 @@ module.exports.telegramBot = ({ body }) => {
   return new Promise(async (resolve, _) => {
     const payload = isLocal() ? body : JSON.parse(body);
     console.log(payload);
-    const telegram = startBot();
+    const telegram = start();
 
     if (
       payload.callback_query &&
       payload.callback_query.data === "REMOVE_CALLBACK"
     ) {
       try {
-        const { message: callbackMessage } = payload.callback_query;
+        const { id, message: callbackMessage } = payload.callback_query;
         await telegram.answerCallbackQuery({
-          callback_query_id: callbackMessage.message_id,
+          callback_query_id: id,
         });
-        await deleteMessage(
-          telegram,
-          callbackMessage.chat.id,
-          callbackMessage.message_id
-        );
+
+        await telegram.deleteMessage({
+          chat_id: callbackMessage.chat.id,
+          message_id: callbackMessage.message_id,
+        });
+
         resolve(response);
       } catch (e) {
         console.error(e);
@@ -68,14 +66,20 @@ module.exports.telegramBot = ({ body }) => {
     console.info(`Message from ${chat.id}: ${JSON.stringify(payload.message)}`);
 
     if (!text && !photo) {
-      await sendMessage(telegram, chat.id, "Falsche Eingabe 😞");
+      await telegram.sendMessage({
+        chat_id: chat.id,
+        text: "Falsche Eingabe 😞",
+      });
       resolve(response);
       return;
     }
 
     const answer = findCommand(text);
     if (answer) {
-      await sendMessage(telegram, chat.id, answer.text);
+      await telegram.sendMessage({
+        chat_id: chat.id,
+        text: answer.text,
+      });
       resolve(response);
       return;
     }
@@ -91,14 +95,22 @@ module.exports.telegramBot = ({ body }) => {
 
 module.exports.telegramApi = ({ body }) => {
   return new Promise(async (resolve, reject) => {
-    const telegram = startBot();
+    const telegram = start();
 
     const { chatId, message } = body;
-    const notificationId = await sendMessage(
-      telegram,
-      chatId,
-      "Eingabe wird validiert..."
-    );
+
+    const notificationId = await telegram
+      .sendMessage({
+        chat_id: chatId,
+        text: "Eingabe wird validiert...",
+      })
+      .then(res => res.message_id);
+
+    await telegram.sendMessage({
+      chat_id: chatId,
+      text: "Test",
+      ...inlineButton("löschen", "REMOVE_CALLBACK"),
+    });
 
     const code = await parseInput(
       telegram,
@@ -108,7 +120,11 @@ module.exports.telegramApi = ({ body }) => {
     ).catch(e => console.error(e.message));
 
     if (!code || !mcDonalds.verifyCode(code)) {
-      await editMessage(telegram, chatId, notificationId, "Falsche Eingabe 😞");
+      telegram.editMessageText({
+        chat_id: chatId,
+        message_id: notificationId,
+        text: "Falsche Eingabe 😞",
+      });
       resolve("Wrong Code");
       return;
     }
@@ -121,7 +137,11 @@ module.exports.telegramApi = ({ body }) => {
           await notifyAdmins(telegram, error.msg, message);
           errorMessage = "Ein unbekannter Fehler ist aufgetreten 😞";
         }
-        await editMessage(telegram, chatId, notificationId, errorMessage);
+        telegram.editMessageText({
+          chat_id: chatId,
+          message_id: notificationId,
+          text: errorMessage,
+        });
       });
 
     if (!file) {
@@ -131,8 +151,14 @@ module.exports.telegramApi = ({ body }) => {
 
     fs.writeFileSync("/tmp/coupon.pdf", file);
 
-    await deleteMessage(telegram, chatId, notificationId);
-    await sendDocument(telegram, chatId, "/tmp/coupon.pdf");
+    await telegram.deleteMessage({
+      chat_id: chatId,
+      message_id: notificationId,
+    });
+    await telegram.sendDocument({
+      chat_id: chatId,
+      document: "/tmp/coupon.pdf",
+    });
 
     resolve("Success");
   });
