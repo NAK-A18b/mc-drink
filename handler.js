@@ -12,7 +12,7 @@ if (!fs.existsSync("/tmp")) {
 }
 
 // Handles http requests to /telegram endpoint
-module.exports.telegramBot = payload => handleTelegramBotRequest(payload);
+module.exports.telegramBot = (payload) => handleTelegramBotRequest(payload);
 
 // Handles lambda invocations triggeres by telegramBot Function
-module.exports.telegramApi = payload => handleTelegramApiRequest(payload);
+module.exports.telegramApi = (payload) => handleTelegramApiRequest(payload);
