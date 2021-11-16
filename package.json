@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/NAK-A18b/McDrink#readme",
   "dependencies": {
-    "aws-sdk": "^2.608.0",
+    "aws-sdk": "^2.814.0",
     "chrome-aws-lambda": "^2.0.2",
     "node-fetch": "^2.6.1",
     "puppeteer-core": "^2.0.0",
