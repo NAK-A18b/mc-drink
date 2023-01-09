@@ -35,7 +35,7 @@
   "devDependencies": {
     "cross-env": "^6.0.3",
     "serverless-iam-roles-per-function": "^2.0.2",
-    "serverless-offline": "^6.0.0-alpha.62",
+    "serverless-offline": "^12.0.4",
     "yaml": "^1.7.2"
   }
 }
